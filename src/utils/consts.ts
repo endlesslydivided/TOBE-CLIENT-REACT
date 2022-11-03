@@ -1,0 +1,8 @@
+export const ADMIN_ROUTE = '/admin'
+export const LOGIN_ROUTE = '/login'
+export const REGISTRATION_ROUTE = '/registration'
+export const FEED_ROUTE = '/feed'
+export const ALBUM_ROUTE = '/album'
+export const CHAT_ROUTE = '/chat'
+export const MAIN_ROUTE = '/'
+export const ERROR_ROUTE = '/error'

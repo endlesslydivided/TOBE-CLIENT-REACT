@@ -1,5 +1,5 @@
 
-export interface ICreateRole {
+export interface IRole {
     value: string;
     description: string;
 }

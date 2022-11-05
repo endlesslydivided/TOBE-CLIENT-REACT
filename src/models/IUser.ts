@@ -1,15 +1,20 @@
 export interface IUser
 {
-    id: number;
+    _id: number;
     firstName: string;
     lastName: string;
     createdAt: Date;
-    updatedAt: Date;
+    _updatedAt: Date;
     userName: string;
     email: string;
-    emailConfirmed: boolean;
+    _emailConfirmed: boolean;
     phoneNumber:string;
-    phoneNumberConfirmed: boolean;
-    mainPhoto: number;
+    _phoneNumberConfirmed: boolean;
+    _mainPhoto: number;
 }
 
+export interface IGenericResponse 
+{
+    status: string;
+    message: string;
+}

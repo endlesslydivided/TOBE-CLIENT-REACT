@@ -31,7 +31,7 @@ const Header = () =>
         
         if (isError) 
         {
-            [...(error as any).data.error].forEach((el: any) =>toast.error(el.message, {position: 'top-right'});
+            [...(error as any).data.error].forEach((el: any) =>toast.error(el.message, {position: 'top-right'}));
         }
     }, [isLoading]);
 

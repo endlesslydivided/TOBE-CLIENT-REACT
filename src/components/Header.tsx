@@ -24,7 +24,7 @@ const Header = () =>
     const navigate = useNavigate();
     const user = useAppSelector(state.userState.user);
 
-    const [logoutUser, { isLoading, isSuccess, error, isError }] =useLogoutUserMutation();
+    const [logoutUser, { isLoading, isSuccess, error, isError }] = useLogoutUserMutation();
 
     useEffect(() => {
         {isSuccess && navigate('/login')}

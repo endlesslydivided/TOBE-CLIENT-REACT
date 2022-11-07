@@ -49,8 +49,14 @@ const EmailVerificationPage = () =>
         }
         if (isError) 
         {
-            [...(error as any).data.error].forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
-        }
+            if (Array.isArray((error as any).data.error)) 
+            {
+                (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+            } 
+            else 
+            {
+                toast.error((error as any).data.message, {position: 'top-right',});
+            }        }
     }, [isLoading]);
 
     const onSubmitHandler: SubmitHandler<VerificationCodeInput> = ({verificationCode,}) =>{verifyEmail({ verificationCode });};

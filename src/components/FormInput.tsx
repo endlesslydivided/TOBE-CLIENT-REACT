@@ -1,4 +1,4 @@
-import {FormHelperText,Typography,FormControl,Input as _Input,InputProps,} from '@mui/material';
+import {FormHelperText,Typography,FormControl,Input as _Input,InputProps, TextField,} from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { FC } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -8,12 +8,13 @@ const Input = styled(_Input)`background-color: white;padding: 0.4rem 0.7rem;`;
 type IFormInputProps = {
 name: string;
 label: string;
+type?: string;
 } & InputProps;
 
-const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) => 
+const FormInput: FC<IFormInputProps> = ({ name, label,type, ...otherProps }) => 
 {
 
-    const {control,formState:{errors},} = useFormContext();
+    const {control,formState:{errors}} = useFormContext();
 
     return (
         <Controller
@@ -24,25 +25,20 @@ const FormInput: FC<IFormInputProps> = ({ name, label, ...otherProps }) =>
         {
             ({ field }) => 
             (
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                <Typography
-                    variant='body2'
-                    sx={{ color: '#2363eb', mb: 1, fontWeight: 500 }}
-                >
-                    {label}
-                </Typography>
-                <Input
+            <FormControl fullWidth sx={{ p: 0.5 }}>
+
+                <TextField
                     {...field}
+                    type={type}
+                    variant="outlined"
                     fullWidth
-                    disableUnderline
-                    sx={{ borderRadius: '1rem' }}
+                    label={label}
                     error={!!errors[name]}
-                    {...otherProps}
+                    helperText={errors[name] ? errors[name]?.message?.toString() : ''}
+                    InputProps={{...otherProps}}
                 />
-                <FormHelperText error={!!errors[name]}>
-                    {errors[name]?.message && ''}
-                </FormHelperText>
-                </FormControl>
+
+            </FormControl>
             )
         }
         />

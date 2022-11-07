@@ -1,7 +1,6 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react"
-import { IPost } from "../models/IPost"
 import { IGenericResponse, IUser } from "../models/IUser"
-import { LoginInput } from "../pages/AuthPage";
+import { LoginInput } from "../pages/LoginPage";
 import { RegisterInput } from "../pages/RegisterPage";
 import { userApi } from "./UserService";
 
@@ -53,7 +52,7 @@ export const authAPI = createApi({
             query({ verificationCode }) 
             {
             return {
-                url: `verifyemail/${verificationCode}`,
+                url: `/verifyemail/${verificationCode}`,
                 method: 'GET',
             };
             },
@@ -63,7 +62,7 @@ export const authAPI = createApi({
         ({
             query() {
               return {
-                url: 'logout',
+                url: '/logout',
                 credentials: 'include',
               };
             },

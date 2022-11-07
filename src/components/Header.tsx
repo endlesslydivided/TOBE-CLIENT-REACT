@@ -22,9 +22,9 @@ font-weight: 500;
 const Header = () => 
 {
     const navigate = useNavigate();
-    const user = useAppSelector(state.userState.user);
+    const userState = useAppSelector(state => state.userState);
 
-    const [logoutUser, { isLoading, isSuccess, error, isError }] = useLogoutUserMutation();
+    const [logoutUser, { isLoading, isSuccess, error, isError }] = useLogoutMutation();
 
     useEffect(() => {
         {isSuccess && navigate('/login')}
@@ -49,7 +49,7 @@ const Header = () =>
                 CodevoWeb
             </Typography>
             <Box display='flex' sx={{ ml: 'auto' }}>
-                {!user && (
+                {!userState && (
                 <>
                     <LoadingButton
                     sx={{ mr: 2 }}
@@ -62,7 +62,7 @@ const Header = () =>
                     </LoadingButton>
                 </>
                 )}
-                {user && (
+                {userState && (
                 <LoadingButton
                     sx={{ backgroundColor: '#eee' }}
                     onClick={onLogoutHandler}
@@ -71,7 +71,7 @@ const Header = () =>
                     Logout
                 </LoadingButton>
                 )}
-                {user && user?.role === 'admin' && (
+                {userState && userState?.user?.role === 'admin' && (
                 <LoadingButton
                     sx={{ backgroundColor: '#eee', ml: 2 }}
                     onClick={() => navigate('/admin')}

@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { IUser } from '../models/IUser';
-import { setUser } from '../store/reducers/UsersSlice';
+import { setUser } from '../store/reducers/UserSlice';
 
 const BASE_URL = process.env.REACT_APP_SERVER_ENDPOINT as string;
 

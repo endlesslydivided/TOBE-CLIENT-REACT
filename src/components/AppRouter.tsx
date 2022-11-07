@@ -6,7 +6,6 @@ import ProfilePage from '../pages/ProfilePage';
 import RegisterPage from '../pages/RegisterPage';
 import UnauthorizePage from '../pages/UnauthorizePage';
 import EmailVerificationPage from '../pages/VerifyEmailPage';
-import {auhtRoutes,publicRoutes,auhtAdminRoutes, anonymousRoute} from '../routes'
 import Layout from './Layout';
 import RequireUser from './RequireUser';
 

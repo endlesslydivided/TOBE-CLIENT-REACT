@@ -13,16 +13,16 @@ const RequireUser = ({ allowedRoles }: { allowedRoles: string[] }) =>
 
   const loading = isLoading || isFetching;
 
-  const user = userApi.endpoints.getMe.useQueryState(null, {selectFromResult: (data) => data});
+  const userState = userApi.endpoints.getMe.useQueryState(null, {selectFromResult: (data) => data});
 
   if (loading) 
   {
     return <FullScreenLoader />;
   }
 
-  return (cookies.logged_in || user) && allowedRoles.includes(user?.role as string) ? (<Outlet />) 
+  return (cookies.logged_in || userState) && allowedRoles.includes(userState?.data?.role as string) ? (<Outlet />) 
   : 
-  cookies.logged_in && user ? (<Navigate to='/unauthorized' state={{ from: location }} replace />) 
+  cookies.logged_in && userState ? (<Navigate to='/unauthorized' state={{ from: location }} replace />) 
   : 
   (<Navigate to='/login' state={{ from: location }} replace />);
 };

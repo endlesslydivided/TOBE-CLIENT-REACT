@@ -3,7 +3,7 @@ import{Routes,Route} from 'react-router-dom'
 import AdminPage from '../pages/AdminPage';
 import LoginPage from '../pages/LoginPage';
 import ProfilePage from '../pages/ProfilePage';
-import RegisterPage from '../pages/RegisterPage';
+import AuthPage from '../pages/AuthPage';
 import UnauthorizePage from '../pages/UnauthorizePage';
 import EmailVerificationPage from '../pages/VerifyEmailPage';
 import Layout from './Layout';
@@ -31,9 +31,11 @@ const AppRouter = () => {
           <Route path=':verificationCode' element={<EmailVerificationPage />} />
         </Route>
 
-        <Route path='login' element={<LoginPage />} />
+        <Route path='login' element={<AuthPage form='login' />} >
+          <Route path=':action' element={<AuthPage form='login' />} />
+        </Route>
 
-        <Route path='register' element={<RegisterPage />} />
+        <Route path='register' element={<AuthPage form='register'/>} />
     </Routes>
   )
 };

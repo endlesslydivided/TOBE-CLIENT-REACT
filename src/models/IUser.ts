@@ -9,6 +9,7 @@ export interface IUser
     email: string;
     _emailConfirmed: boolean;
     phoneNumber:string;
+    role:string;
     _phoneNumberConfirmed: boolean;
     _mainPhoto: number;
 }

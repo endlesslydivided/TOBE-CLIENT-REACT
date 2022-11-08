@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react"
 import { IGenericResponse, IUser } from "../models/IUser"
 import { LoginInput } from "../pages/LoginPage";
-import { RegisterInput } from "../pages/RegisterPage";
+import { RegisterInput } from "../components/RegisterForm";
 import { userApi } from "./UserService";
 
 const BASE_URL = process.env.REACT_APP_API_URL as string;

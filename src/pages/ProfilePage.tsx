@@ -3,7 +3,7 @@ import { useAppSelector } from '../hooks/redux';
 
 const ProfilePage = () => 
 {
-    const {user} = useAppSelector(state => state.userState);
+    const {user} :any = useAppSelector(state => state.auth.user);
 
     return (
         <Container maxWidth='lg'>

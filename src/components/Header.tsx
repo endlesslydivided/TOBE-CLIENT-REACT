@@ -2,7 +2,7 @@ import {AppBar,Avatar,Box,Container,IconButton,Toolbar,Tooltip,Typography,} from
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../hooks/redux';
-import { useLogoutMutation } from '../services/AuthService';
+import { useLogoutMutation } from '../services/AuthApiSlice';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
@@ -22,20 +22,29 @@ font-weight: 500;
 const Header = () => 
 {
     const navigate = useNavigate();
-    const userState = useAppSelector(state => state.userState);
+    const userState :any = useAppSelector(state => state.auth.user);
 
-    const [logoutUser, { isLoading, isSuccess, error, isError }] = useLogoutMutation();
+    const [logOut, { isLoading }] = useLogoutMutation();
 
-    useEffect(() => {
-        {isSuccess && navigate('/login')}
-        
-        if (isError) 
+
+    const onLogoutHandler = async () => {
+        try
         {
-            [...(error as any).data.error].forEach((el: any) =>toast.error(el.message, {position: 'top-right'}));
+            await logOut(null);
+            navigate('/login');
         }
-    }, [isLoading]);
-
-    const onLogoutHandler = async () => {logoutUser();};
+        catch(error)
+        {
+            if (Array.isArray((error as any).data.error))
+            {
+                (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+            } 
+            else 
+            {
+                toast.error((error as any).data.message, {position: 'top-right',});
+            }
+        }
+    };
 
     return (
         <AppBar position='static'>

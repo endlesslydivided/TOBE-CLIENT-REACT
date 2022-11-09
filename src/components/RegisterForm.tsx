@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import FormInput from '../components/FormInput';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRegisterMutation } from '../services/AuthService';
+import { useRegisterMutation } from '../services/AuthApiSlice';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 
@@ -75,7 +75,7 @@ export function RegisterForm() {
     {
         if (isSuccess) 
         {
-            toast.success('User registered successfully');
+            toast.success('Пользователь зарегистрирован успешно');
             navigate('/verifyemail');
         }
 

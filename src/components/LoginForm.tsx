@@ -6,9 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import FormInput from '../components/FormInput';
 import { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useLoginMutation } from '../services/AuthService';
+import { useLoginMutation } from '../services/AuthApiSlice';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../store/reducers/AuthSlice';
 
 
 function Copyright(props: any) {
@@ -55,27 +57,29 @@ export type LoginInput = TypeOf<typeof loginSchema>;
 export function LoginForm() {
 
     const methods = useForm<LoginInput>({resolver: zodResolver(loginSchema),});
-
-    const [loginUser, { isLoading, isSuccess, error, isError }] = useLoginMutation();
-
-
     const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
+
+    const [loginUser, { isLoading }] = useLoginMutation();
 
     const navigate = useNavigate();
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
-    useEffect(() => 
-    {
-        if (isSuccess) 
-        {
-            navigate(from);
-        }
+    useEffect(() =>{{isSubmitSuccessful &&  reset()}}, [isSubmitSuccessful]);
 
-        if (isError) 
-        {
-          if (Array.isArray((error as any).data.error))
+    const onSubmitHandler: SubmitHandler<LoginInput> = async (values) => 
+    {     
+      try
+      {
+        const userData = await loginUser(values).unwrap();
+        dispatch(setCredentials({...userData}));
+        navigate(from);
+      }
+      catch(error)
+      {
+        if (Array.isArray((error as any).data.error))
           {
               (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
           } 
@@ -83,15 +87,9 @@ export function LoginForm() {
           {
               toast.error((error as any).data.message, {position: 'top-right',});
           }
-        }
-    }, [isLoading]);
-
-    useEffect(() =>{{isSubmitSuccessful &&  reset()}}, [isSubmitSuccessful]);
-
-    const onSubmitHandler: SubmitHandler<LoginInput> = (values) => 
-    {     
-        loginUser(values);
+      }
     };
+
     return (
         <Grid sx={{alignContent:'center',justifyContent:'center',display:'flex'}} item xs={12} sm={8} md={5} component={Paper}  elevation={6}>
         <Box sx={{my: 0,mx: 4,display: 'flex',flexDirection: 'column',alignItems: 'center', justifyContent:'center'}} >

@@ -111,7 +111,7 @@ export function LoginForm() {
 
                 <FormInput name='password' label='Пароль' type='password'   />
 
-                <LoadingButton variant='contained' sx={{ mt: 1 }} fullWidth disableElevation type='submit' loading={isLoading}>
+                <LoadingButton variant='contained' sx={{ mt: 1 ,bgColor:"black"}} fullWidth disableElevation type='submit' loading={isLoading}>
                   Войти
                 </LoadingButton>  
 

@@ -1,4 +1,4 @@
-import { Avatar, Box, Container, Grid, Paper, Typography } from '@mui/material';
+import { Avatar, Box, Container, FormControlLabel, Grid, InputAdornment, Paper, Radio, Typography } from '@mui/material';
 import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
 import { FormProvider, SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { object, string, TypeOf } from 'zod';
@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '../services/AuthApiSlice';
 import { LoadingButton as _LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
+import { Add, Label } from '@mui/icons-material';
 
 
 function Copyright(props: any) {
@@ -46,13 +47,15 @@ const LinkItem = styled(Link)`
 `;
 
 const registerSchema = object({
-    firstName: string().min(1,'First name is required').max(50),
-    username: string().min(1,'Username is required').max(25),
-    email: string().min(1,'Email address is required').email('Email Address is invalid'),
-    lastName: string().min(1,'Last name is required').max(50),
-    phoneNumber: string().min(1,'Phone number is required').max(12),
-    password: string().min(1,'Password is required').min(8, 'Password must be more than 8 characters').max(32, 'Password must be less than 32 characters'),
-    passwordConfirm: string().min(1,'Please confirm your password'),
+    sex: string().min(1,'Необходимо ввести пол').max(10),
+    city: string().min(1,'Необходимо ввести город').max(100,'Поле "Город" должно содержать не больше 100 символов'),
+    country: string().min(1,'Необходимо ввести страну').max(50,'Поле "Страна" должно содержать не больше 50 символов'),
+    firstName: string().min(1,'Необходимо ввести имя').max(50,'Поле "Имя" должно содержать не больше 50 символов'),
+    email: string().min(1,'Необходимо ввести адрес электронной почты').email('Адрес электронной почты не валиден'),
+    lastName: string().min(1,'Необходимо ввести фамилию').max(50,'Поле "Фамилия" должно содержать не больше 50 символов'),
+    phoneNumber: string().min(1,'Необходимо ввести номер телефона').max(12,'Поле "Номер телефона" должно содержать не больше 12 символов'),
+    password: string().min(1,'Необходимо ввести пароль').min(8, 'Пароль должен быть длиннее 8 символов').max(32, 'Пароль должен быть короче 32 символов'),
+    passwordConfirm: string().min(1,'Подтвердите пароль'),
 }).refine((data) => data.password === data.passwordConfirm, 
 {
     path: ['passwordConfirm'],
@@ -64,87 +67,104 @@ export type RegisterInput = TypeOf<typeof registerSchema>;
 export function RegisterForm() {
 
     const methods = useForm<RegisterInput>({resolver: zodResolver(registerSchema),});
+    const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
 
     const [registerUser, { isLoading, isSuccess, error, isError }] = useRegisterMutation();
-
     const navigate = useNavigate();
-
-    const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
 
     useEffect(() => 
     {
         if (isSuccess) 
         {
-            toast.success('Пользователь зарегистрирован успешно');
-            navigate('/verifyemail');
+          toast.success('Пользователь зарегистрирован успешно');
+          navigate('/verifyemail');
         }
 
         if (isError) 
         {
           if (Array.isArray((error as any).data.error)) 
           {
-              (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+            (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
           } 
           else 
           {
-              toast.error((error as any).data.message, {position: 'top-right',});
+            toast.error((error as any).data.message, {position: 'top-right',});
           }
         }
     }, [isLoading]);
 
-    useEffect(() =>{{isSubmitSuccessful &&  reset()}}, [isSubmitSuccessful]);
+    useEffect(() =>{{isSubmitSuccessful && isSuccess &&  reset()}}, [isSubmitSuccessful,isSuccess]);
 
     const onSubmitHandler: SubmitHandler<RegisterInput> = (values) => 
     {     
       registerUser(values);
     };
+
     return (
-        <Grid sx={{alignContent:'center',justifyContent:'center',display:'flex'}} item xs={12} sm={8} md={5} component={Paper}  elevation={6}>
-        <Box sx={{my: 0,mx: 4,display: 'flex',flexDirection: 'column',alignItems: 'center', justifyContent:'center'}} >
-          <Avatar sx={{ mb: 1, bgcolor: 'primary.main' }}>
-            
-          </Avatar>
+    <Grid sx={{alignContent:'center',justifyContent:'center',display:'flex'}} item xs={12} sm={8} md={5} component={Paper}  elevation={6}>
+      <Box sx={{my: 0,mx: 4,display: 'flex',flexDirection: 'column',alignItems: 'center', justifyContent:'center'}} >
+			  <Avatar sx={{ mb: 1, bgcolor: 'primary.main' }}>
+				
+			  </Avatar>
 
-          <Typography component="h1" variant="h4" sx={{ mb: 3}}>
-            Зарегистрируйся
-          </Typography>
+        <Typography component="h1" variant="h4" sx={{ mb: 3}}>
+          Зарегистрируйся
+        </Typography>
+      
+        <FormProvider {...methods}>
+          <Box component='form'  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' maxWidth='27rem'  width='100%'>
 
+            <Grid container>
 
-            <FormProvider {...methods}>
-              <Box component='form'  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' maxWidth='27rem'  width='100%'>
+              <Grid item xs={6} md={6}>
+                <FormInput name='firstName' label='Имя' type='text'margin='none'  />
+              </Grid>
 
-                <Grid container>
+              <Grid item xs={6} md={6}>
+                <FormInput name='lastName' label='Фамилия' type='text'   />
+              </Grid>
 
-                  <Grid item xs={6} md={6}>
-                    <FormInput name='firstName' label='Имя' type='text'margin='none'  />
-                  </Grid>
+            </Grid>
 
-                  <Grid item xs={6} md={6}>
-                    <FormInput name='lastName' label='Фамилия' type='text'   />
-                  </Grid>
+            <Grid container>
 
-                </Grid>
-              
-                <FormInput name='email' label='Email' type='email'/>
-                <FormInput name='phoneNumber' label='Номер телефона' type='text'    />
-                <FormInput name='username' label='Никнейм' type='text'   />
+              <Grid item xs={6} md={6}>
+                <FormInput name='country' label='Страна' type='text' margin='none'  />
+              </Grid>
 
-                <FormInput name='password' label='Пароль' type='password'   />
-                <FormInput name='passwordConfirm' label='Подтвердить пароль'  type='password'/>
+              <Grid item xs={6} md={6}>
+                <FormInput name='city' label='Город' type='text'   />
+              </Grid>
 
-                <LoadingButton variant='contained' sx={{ mt: 1 }} fullWidth disableElevation type='submit' loading={isLoading}>
-                  Зарегистрироваться
-                </LoadingButton>  
+            </Grid>
+          
+            <FormInput name='email' label='Email' type='email'/>
+            <FormInput name='phoneNumber' label='Номер телефона' type='text' startAdornment={
+               <InputAdornment position='start'>
+                <Add/>
+              </InputAdornment>
+              }/>
 
-              </Box>
-            </FormProvider>
+            <FormInput name='password' label='Пароль' type='password'   />
+            <FormInput name='passwordConfirm' label='Подтвердить пароль'  type='password'/>
+            <FormInput name='sex' type='radio' label="Пол">
+              <FormControlLabel value="Мужской" control={<Radio />} label="Мужской" />
+              <FormControlLabel value="Женский" control={<Radio />} label="Женский" />
+            </FormInput>
 
-            <Typography sx={{ fontSize: '0.9rem', mt: 3,justifySelf:'center'}}>
-              Уже есть аккаунт?{' '} <LinkItem to='/login'>Войти!</LinkItem>
-            </Typography>
+            <LoadingButton variant='contained' sx={{ mt: 1}} fullWidth disableElevation type='submit' loading={isLoading}>
+              Зарегистрироваться
+            </LoadingButton>  
+
+          </Box>
+        </FormProvider>
+
+        <Typography sx={{ fontSize: '0.9rem', mt: 3,justifySelf:'center'}}>
+          Уже есть аккаунт?{' '} <LinkItem to='/login'>Войти!</LinkItem>
+        </Typography>
 
             {/* <Copyright sx={{ mt: 'auto' }} /> */}
-        </Box>
-      </Grid>
+      </Box>
+    </Grid>
     )
 }

@@ -1,6 +1,6 @@
-import {FormHelperText,Typography,FormControl,Input as _Input,InputProps, TextField,} from '@mui/material';
+import {FormHelperText,Typography,FormControl,Input as _Input,InputProps, TextField, RadioGroup, FormLabel, Radio, FormControlLabel,} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { FC, useState } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { InputAdornment } from '@mui/material';
 import {QuestionMark} from '@mui/icons-material';
@@ -15,9 +15,10 @@ type IFormInputProps = {
 name: string;
 label: string;
 type?: string;
+children?:any;
 } & InputProps;
 
-const FormInput: FC<IFormInputProps> = ({ name, label,type, ...otherProps }) => 
+const FormInput: FC<IFormInputProps> = ({ children,name, label,type, ...otherProps }) => 
 {
     const [showPassword,setShowPassword] = useState(false);
     const {control,formState:{errors}} = useFormContext();
@@ -25,6 +26,83 @@ const FormInput: FC<IFormInputProps> = ({ name, label,type, ...otherProps }) =>
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const renderContent = (field:any) =>
+    {
+        switch(type)
+        {
+            case "radio":
+            {
+                return (<>
+                <FormLabel>{label}</FormLabel>
+                <RadioGroup
+                  row
+                  variant="outlined"
+                  {...field}
+                  error={!!errors[name]}
+                  InputProps={{...otherProps,
+                    endAdornment:                    
+                        ( 
+                        <InputAdornment position='end'>
+                            {!!errors[name] && <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>}
+                            <IconButton onClick={handleClickShowPassword} color='default'>
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>)
+                    }}
+                >
+                  {children}
+                </RadioGroup>
+                </>
+                )
+            }
+            case "password":
+            {
+                return(
+                    <TextField
+                        {...field}
+                        type={showPassword? 'text' : 'password'}
+                        variant="outlined"
+                        fullWidth
+                        label={label}
+                        error={!!errors[name]}
+                        InputProps={{...otherProps,
+                        endAdornment:                    
+                            ( 
+                            <InputAdornment position='end'>
+                                {!!errors[name] && <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>}
+                                <IconButton onClick={handleClickShowPassword} color='default'>
+                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                            </InputAdornment>)
+                        }}
+                    />                      
+                )
+            }
+            case "email":
+            case "text":
+            {
+                return(
+                    <TextField
+                        {...field}
+                        type={type}
+                        variant="outlined"
+                        fullWidth
+                        label={label}
+                        error={!!errors[name]}
+                        InputProps={{...otherProps,
+                        endAdornment:                    
+                            ( 
+                            <InputAdornment position='end'>
+                                {!!errors[name] && <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>}
+
+                            </InputAdornment>)
+                        }}
+                    />                      
+                )
+            }
+        }
+    }
     
 
     return (
@@ -37,46 +115,7 @@ const FormInput: FC<IFormInputProps> = ({ name, label,type, ...otherProps }) =>
             ({ field }) => 
             (
             <FormControl fullWidth sx={{ p: 0.5 }}>
-                {type === 'password' ?
-                <TextField
-                    className={"p-3"}
-                    {...field}
-                    type={showPassword? 'text' : 'password'}
-                    variant="outlined"
-                    fullWidth
-                    label={label}
-                    error={!!errors[name]}
-                    InputProps={{...otherProps,
-                    endAdornment:                    
-                        ( 
-                        <InputAdornment position='end'>
-                            {!!errors[name] && <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>}
-                            <IconButton onClick={handleClickShowPassword} color='default'>
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>)
-                    }}
-                />
-                :
-                <TextField
-                    className={"p-3"}
-                    {...field}
-                    type={type}
-                    variant="outlined"
-                    fullWidth
-                    label={label}
-                    error={!!errors[name]}
-                    InputProps={{...otherProps,
-                    endAdornment:
-                    
-                        (!!errors[name] && 
-                        <InputAdornment position='end'>
-                            <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>
-                        </InputAdornment>)
-                    }}
-                />
-                }
-
+                {renderContent(field)}
             </FormControl>
             )
         }

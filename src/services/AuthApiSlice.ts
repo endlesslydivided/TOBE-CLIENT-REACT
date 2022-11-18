@@ -4,7 +4,7 @@ import { apiSlice } from "./ApiSlice";
 export const authApiSlice = apiSlice.injectEndpoints({   
     endpoints: builder => ({
         login: builder.mutation({
-            query: credentials => ({
+            query: (credentials) => ({
                 url:'/auth/login',
                 method:'POST',
                 body: {...credentials}
@@ -28,9 +28,16 @@ export const authApiSlice = apiSlice.injectEndpoints({
             
         }),
 
-        logout: builder.mutation({
+        logout: builder.mutation<void,void>({
             query: () => ({
                 url: '/auth/logout',
+                method: 'GET',
+                credentials: 'include',
+            })
+        }),
+        getMe: builder.mutation<any,void>({
+            query: () => ({
+                url: '/auth/me',
                 method: 'GET',
                 credentials: 'include',
             })
@@ -43,4 +50,5 @@ export const {
     useLoginMutation,
     useRegisterMutation,
     useLogoutMutation,
-    useVerifyEmailMutation,} = authApiSlice;
+    useVerifyEmailMutation,
+    useGetMeMutation} = authApiSlice;

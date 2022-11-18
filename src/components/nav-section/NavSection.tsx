@@ -37,10 +37,10 @@ const NavSection: FC<INavSectionProps> = ({ data = [],user, ...other }) =>{
 
 const  NavItem:FC<INavItemProps> = ({ item,mainPath }) => 
 {
-  const { route, Icon, text,index }:any = item;
+  const { route, Icon, text,key }:any = item;
 
   return (
-    <StyledNavItem component={RouterLink} to={mainPath + (route)}  
+    <StyledNavItem key={key} component={RouterLink} to={mainPath + (route)}  
     sx={{'&.active': {
           color: 'text.primary',
           bgcolor: 'action.selected',

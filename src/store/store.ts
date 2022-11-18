@@ -5,6 +5,7 @@ import userReducer from "./reducers/UserSlice";
 import friendReducer from "./reducers/FriendSlice";
 import albumReducer from "./reducers/AlbumSlice";
 import photoReducer from "./reducers/PhotoSlice";
+import fileReducer from "./reducers/FileSlice";
 
 
 
@@ -15,7 +16,8 @@ export const store = configureStore({
         user: userReducer,
         friend: friendReducer,
         album: albumReducer,
-        photo: photoReducer
+        photo: photoReducer,
+        file: fileReducer
     },
     middleware:(getDefaultMiddleware) =>
         getDefaultMiddleware().concat(apiSlice.middleware),

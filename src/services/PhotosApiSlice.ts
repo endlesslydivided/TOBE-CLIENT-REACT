@@ -7,6 +7,9 @@ export const photoApiSlice = apiSlice.injectEndpoints({
             query: (photo) => ({
                 url:'/photos',
                 method:'POST',
+                headers: {
+                    "Content-Type": "multipart/form-data;",
+                  },
                 body: {...photo}
             })
         }),

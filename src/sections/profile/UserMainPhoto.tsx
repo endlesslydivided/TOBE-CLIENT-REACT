@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { useTheme, styled } from '@mui/material/styles';
 import { Card, CardHeader } from '@mui/material';
 import { FC, useEffect } from 'react';
@@ -13,6 +14,7 @@ import { selectCurrentAlbum, setCurrentAlbum } from '../../store/reducers/AlbumS
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks/redux';
 import { setCurrentPhoto } from '../../store/reducers/PhotoSlice';
+import FileButton from '../../components/fileButton/FileButton';
 
 interface IUserMainPhotoProps
 {
@@ -66,8 +68,13 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,isDropActive,...other}
   }, [albumStatus.isLoading]);
 
 
-  const addMainPhoto = async (file:File) =>
+  const addMainPhoto = async (file:File| null) =>
   {
+    if(!file)
+    {
+      toast.error("Выберите изображение", {position: 'top-right',}); 
+      return; 
+    }
     const albumData = await createAlbum({name:"Фото профиля",userId:userState.id}).unwrap();
     dispatch(setCurrentAlbum({...albumData})); 
 
@@ -93,9 +100,9 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,isDropActive,...other}
         />
         :
         <DragZone isDropActive={isDropActive} extensions={['png','jpeg','jpg']} setFile={addMainPhoto}>
-          <LoadingButton sx={{height:"50vh",width:"100%",color:"red"}}>
-              <Add/>
-          </LoadingButton>
+          <FileButton sx={{height:"50vh",width:"100%",color:"red"}} setFile={addMainPhoto}>
+            <Add/>
+          </FileButton>
         </DragZone>
       }
     </Card>

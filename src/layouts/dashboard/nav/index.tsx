@@ -44,8 +44,7 @@ const Nav: FC<INavProps> = ({ openNav, onCloseNav,user }) =>{
   }, [pathname]);
 
   const renderContent = (
-    <Scrollbar sx={{height: 1,'& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' }}}
-    >
+    <Scrollbar sx={{height: 1,'& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' }}}>
       <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
         <Logo />
       </Box>

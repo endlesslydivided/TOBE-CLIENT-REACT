@@ -12,6 +12,7 @@ import Scrollbar from '../../../components/scrollbar';
 import NavSection from '../../../components/nav-section';
 
 import navConfig from './config';
+import { useAppSelector } from '../../../hooks/redux';
 
 
 const NAV_WIDTH = 280;
@@ -28,13 +29,13 @@ interface INavProps
 {
   openNav: boolean,
   onCloseNav: funciton,
-  user:any
 }
 
-const Nav: FC<INavProps> = ({ openNav, onCloseNav,user }) =>{
+const Nav: FC<INavProps> = ({ openNav, onCloseNav }) =>{
   
   const { pathname } = useLocation();
   const isDesktop = useResponsive('up', 'lg');
+	const user :any = useAppSelector(state => state.auth.user);
 
   useEffect(() => { 
     if (openNav) 
@@ -52,7 +53,7 @@ const Nav: FC<INavProps> = ({ openNav, onCloseNav,user }) =>{
       <Box sx={{ mb: 5, mx: 2.5 }}>
         <Link underline="none">
           <StyledAccount>
-            <Avatar src={user.mainPhoto} alt="photoURL" />
+            <Avatar src={process.env.REACT_APP_API_URL + user?.photo.path}  alt="photoURL" />
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>

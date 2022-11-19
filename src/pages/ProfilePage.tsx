@@ -19,11 +19,11 @@ const ProfilePage = () =>
     return (
         <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
             <Grid container spacing={3}>
-                <Grid item xs={12} md={4} lg={4}>
-                    <UserMainPhoto sx={{minHeight:"100%",alignItems:"center"}} isDropActive={isDropActive} userState={userState}/>
+                <Grid item xs={12} md={3} lg={3}>
+                    <UserMainPhoto sx={{height:"75%",alignItems:"center"}} isDropActive={isDropActive} userState={userState}/>
                 </Grid>
-                <Grid item xs={12} md={6} lg={8}>
-                    <UserData sx={{minHeight:"100%",alignItems:"center"}}  userState={userState}/>
+                <Grid item xs={12} md lg>
+                    <UserData sx={{alignItems:"center"}}  userState={userState}/>
                 </Grid>
             </Grid>
         </Container>

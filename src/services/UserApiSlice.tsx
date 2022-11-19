@@ -1,39 +1,18 @@
-
-// import { setUser } from '../store/reducers/UserSlice';
-// import { apiSlice } from './AuthSlice';
+import { apiSlice } from "./ApiSlice";
 
 
-// export const userApiSlice = apiSlice.injectEndpoints({
-//   endpoints: (builder) => 
-//   ({
-//     getMe: builder.query<any, null>
-//     ({
-//       query() {
-//         return {
-//           url: 'me',
-//           credentials: 'include',
-//         };
-//       },
-//       transformResponse: (result: { data: { user: any } }) =>
-//         {
-//           console.log(result);
-//           return result.data.user;
-//         },
-//       async onQueryStarted(args, { dispatch, queryFulfilled }) {
-//         try 
-//         {
-//           const { data } = await queryFulfilled;
-//           console.log(data);
+export const userApiSlice = apiSlice.injectEndpoints({   
+    endpoints: builder => ({
+        updateUser: builder.mutation({
+            query: ({id,dto}) => ({
+                url:`/users/${id}`,
+                method:`PUT`,
+                body: dto
+            })
+        })
+    })
+})
 
-//           dispatch(setUser(data));
-//         } 
-//         catch (error) {
-//           console.warn(error);
 
-//         }
-//       },
-//     }),
-//   }),
-// });
-
-export{}
+export const {
+    useUpdateUserMutation} = userApiSlice;

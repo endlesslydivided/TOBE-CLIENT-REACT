@@ -15,6 +15,9 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks/redux';
 import { setCurrentPhoto } from '../../store/reducers/PhotoSlice';
 import FileButton from '../../components/fileButton/FileButton';
+import { useUpdateUserMutation } from '../../services/UserApiSlice';
+import { setCredentials } from '../../store/reducers/AuthSlice';
+import { IUser } from '../../models/IUser';
 
 interface IUserMainPhotoProps
 {
@@ -29,43 +32,34 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,isDropActive,...other}
   
   const [createPhoto, photoStatus] = useCreatePhotoMutation();
   const [createAlbum, albumStatus] = useCreateAlbumMutation();
+  const [updateUser, userStatus] = useUpdateUserMutation();
+
   const dispatch = useDispatch();
 
-
-  useEffect(() => 
+  const checkStatus = (status,successMessage) => 
   {
-      if (photoStatus.isSuccess) 
+      if (status.isSuccess) 
       {
-        toast.success('Фото успешно добавлено!');
+        toast.success(successMessage);
       }
 
-      if (photoStatus.isError) 
+      if (status.isError) 
       {
-        if (Array.isArray((photoStatus.error as any).data.error)) 
+        if (Array.isArray((status.error as any).data.error)) 
         {
-          (photoStatus.error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+          (status.error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
         } 
         else 
         {
-          toast.error((photoStatus.error as any).data.message, {position: 'top-right',});
+          toast.error((status.error as any).data.message, {position: 'top-right',});
         }
       }
-  }, [photoStatus.isLoading]);
+  };
 
-  useEffect(() => 
-  {
-      if (albumStatus.isError) 
-      {
-        if (Array.isArray((photoStatus.error as any).data.error)) 
-        {
-          (albumStatus.error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
-        } 
-        else 
-        {
-          toast.error((albumStatus.error as any).data.message, {position: 'top-right',});
-        }
-      }
-  }, [albumStatus.isLoading]);
+
+  useEffect(() => checkStatus(photoStatus,`Фото успешно добавлено!`),[photoStatus.isLoading]);
+  useEffect(() => checkStatus(albumStatus,`Альбом успешно создан!`),[albumStatus.isLoading]);
+  useEffect(() => checkStatus(userStatus,`Пользователь успешно изменён!`),[userStatus.isLoading]);
 
 
   const addMainPhoto = async (file:File| null) =>
@@ -81,22 +75,37 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,isDropActive,...other}
     if (albumData) 
     {
       const formData = new FormData();
-      formData.append('file', file);
-      formData.append('albumId',albumData[0].id);
-      formData.append('description', '');
-      formData.append('name',file.name);
-      const photoData = await createPhoto(formData).unwrap();
-      dispatch(setCurrentPhoto({...photoData})); 
+      let blob;
+      const fr = new FileReader()
+      fr.readAsArrayBuffer(file)
+      fr.onload = async () => 
+      {
+          blob = new Blob([fr.result],{type:file.type});
+
+          // const url = URL.createObjectURL(blob, {type: "image/png"});
+          // const a = document.createElement("a")
+          // a.href = url 
+          // a.download = "image"
+          // a.click()
+
+          formData.append('file', blob,file.name);
+          formData.append('albumId',albumData[0].id);
+          formData.append('description', '');
+          
+          const photoData = await createPhoto(formData).unwrap();
+          dispatch(setCurrentPhoto({...photoData})); 
+          const userData = await updateUser({id:userState.id, dto: {mainPhoto: photoData.id}}).unwrap();
+          dispatch(setCredentials({...userState,mainPhoto: userData.mainPhoto}))
+      }  
     }   
   }
 
   return (
     <Card {...other}>
-      {userState?.mainPhoto ?
-        <Image src={process.env.REACT_APP_API_URL + userState?.mainPhoto} 
-        bgColor="whitesmoke"
-        height="100%"
-        width="100%"
+      {
+        userState?.photo ?
+        <Image src={process.env.REACT_APP_API_URL + userState?.photo.path} 
+        bgColor="whitesmoke" fit="cover"
         />
         :
         <DragZone isDropActive={isDropActive} extensions={['png','jpeg','jpg']} setFile={addMainPhoto}>

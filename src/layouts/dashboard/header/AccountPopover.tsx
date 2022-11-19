@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { LoadingButton } from '@mui/lab';
 import { ExitToApp, Person } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const MENU_OPTIONS = [
   {label: 'Profile',icon: <Person  fontSize="small"/>},
@@ -19,8 +20,8 @@ const MENU_OPTIONS = [
 export default function AccountPopover() 
 {
   const [open, setOpen] = useState(null);
-  const userState :any = useAppSelector(state => state.auth.user);
-
+  const user :any = useAppSelector(state => state.auth.user);
+  const navigate = useNavigate();
   const handleOpen = (event:any) => {
     setOpen(event.currentTarget);
   };
@@ -72,7 +73,7 @@ export default function AccountPopover()
           }),
         }}
       >
-        <Avatar src={userState.mainPhoto} alt="photoURL" />
+        <Avatar src={process.env.REACT_APP_API_URL + user?.photo.path}  alt="photoURL" />
       </IconButton>
 
       <Popover open={Boolean(open)} anchorEl={open} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -81,10 +82,10 @@ export default function AccountPopover()
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {userState.firstName + userState.lastName}
+            {user.firstName + user.lastName}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {userState.email}
+            {user.email}
           </Typography>
         </Box>
 

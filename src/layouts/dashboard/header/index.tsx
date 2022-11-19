@@ -33,10 +33,10 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 interface IHeaderProps
 {
-  onOpenNav: React.MouseEventHandler
+  onOpenNav: React.MouseEventHandler,
 }
 
-const Header: FC<IHeaderProps>  = ({ onOpenNav }) =>{
+const Header: FC<IHeaderProps>  = ({ onOpenNav}) =>{
   return (
     <StyledRoot>
       <StyledToolbar>

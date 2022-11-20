@@ -1,6 +1,6 @@
-import { AccountCircleOutlined, ChatBubbleOutlineOutlined, FeedOutlined, Newspaper, PhotoLibraryOutlined } from '@mui/icons-material'
+import { AccountCircleOutlined, ChatBubbleOutlineOutlined, FeedOutlined, Newspaper, PeopleOutline, PhotoLibraryOutlined } from '@mui/icons-material'
 
-import {ADMIN_ROUTE,LOGIN_ROUTE,REGISTRATION_ROUTE,FEED_ROUTE,ALBUM_ROUTE,CHAT_ROUTE,MAIN_ROUTE,ERROR_ROUTE,PROFILE_ROUTE,} from './consts'
+import {ADMIN_ROUTE,LOGIN_ROUTE,REGISTRATION_ROUTE,FEED_ROUTE,ALBUM_ROUTE,CHAT_ROUTE,MAIN_ROUTE,ERROR_ROUTE,PROFILE_ROUTE, USERS_ROUTE,} from './consts'
 
 
 export const roleRoutesManager= 
@@ -9,6 +9,22 @@ export const roleRoutesManager=
         mainPath: '/user',
         role: 'USER',
         routes:[
+            {
+                route: PROFILE_ROUTE,
+                Icon: AccountCircleOutlined,
+                text: 'Профиль',
+                index: true
+            },
+            {
+                route: CHAT_ROUTE,
+                Icon: ChatBubbleOutlineOutlined,
+                text: 'Сообщения'
+            },
+            {
+                route: USERS_ROUTE,
+                Icon: PeopleOutline,
+                text: 'Пользователи'
+            },
             {
                 route: FEED_ROUTE,
                 Icon: FeedOutlined,
@@ -19,17 +35,7 @@ export const roleRoutesManager=
                 Icon: PhotoLibraryOutlined,
                 text: 'Фотографии'
             },
-            {
-                route: CHAT_ROUTE,
-                Icon: ChatBubbleOutlineOutlined,
-                text: 'Сообщения'
-            },
-            {
-                route: PROFILE_ROUTE,
-                Icon: AccountCircleOutlined,
-                text: 'Профиль',
-                index: true
-            }]
+            ]
     },
     {
         mainPath: '/admin',

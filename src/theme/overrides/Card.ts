@@ -26,6 +26,9 @@ export default function Card(theme) {
     MuiCardContent: {
       styleOverrides: {
         root: {
+          '&:last-child': {
+            padding: '0',
+          },
           padding: theme.spacing(3),
         },
       },

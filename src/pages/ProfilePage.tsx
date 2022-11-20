@@ -3,10 +3,11 @@ import { useAppSelector } from '../hooks/redux';
 import { Add } from '@mui/icons-material';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import Image from 'mui-image';
-import UserMainPhoto from '../sections/profile/UserMainPhoto';
+import ProfileMainPhoto from '../sections/profile/userMainPhoto/ProfileMainPhoto';
 import UserData from '../sections/profile/userData/UserData';
 import DragZone from '../components/dragZone';
 import { useRef, useState } from 'react';
+import UserMainPhoto from '../sections/profile/userMainPhoto/UserMainPhoto';
 
 
 const ProfilePage = () => 
@@ -20,10 +21,10 @@ const ProfilePage = () =>
         <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={3} lg={3}>
-                    <UserMainPhoto sx={{height:"75%",alignItems:"center"}} isDropActive={isDropActive} userState={userState}/>
+                    <UserMainPhoto sx={{height:"100%",alignItems:"center"}} userState={userState}/>
                 </Grid>
                 <Grid item xs={12} md lg>
-                    <UserData sx={{alignItems:"center"}}  userState={userState}/>
+                    <UserData sx={{alignItems:"center",height:"100%"}}  userState={userState}/>
                 </Grid>
             </Grid>
         </Container>

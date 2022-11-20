@@ -78,13 +78,13 @@ export default function AccountPopover()
 
       <Popover open={Boolean(open)} anchorEl={open} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{sx: {p: 0,mt: 1.5,ml: 0.75,width: 180,'& .MuiMenuItem-root': {typography: 'body2',borderRadius: 0.75}}}}
+        PaperProps={{sx: {p: 0,mt: 1.5,ml: 0.75,'& .MuiMenuItem-root': {typography: 'body2',borderRadius: 0.75}}}}
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {user.firstName + user.lastName}
+            {`${user.firstName} ${user.lastName}`}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }} nowrap >
             {user.email}
           </Typography>
         </Box>

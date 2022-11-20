@@ -5,21 +5,21 @@ import { FC, useEffect } from 'react';
 import { Add } from '@mui/icons-material';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import Image from 'mui-image';
-import DragZone from '../../components/dragZone';
-import { useCreatePhotoMutation } from '../../services/PhotosApiSlice';
-import { useCreateAlbumMutation } from '../../services/AlbumsApiSlice';
+import DragZone from '../../../components/dragZone';
+import { useCreatePhotoMutation } from '../../../services/PhotosApiSlice';
+import { useCreateAlbumMutation } from '../../../services/AlbumsApiSlice';
 import { toast } from 'react-toastify';
 import { LoadingButton } from '@mui/lab';
-import { selectCurrentAlbum, setCurrentAlbum } from '../../store/reducers/AlbumSlice';
+import { selectCurrentAlbum, setCurrentAlbum } from '../../../store/reducers/AlbumSlice';
 import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../hooks/redux';
-import { setCurrentPhoto } from '../../store/reducers/PhotoSlice';
-import FileButton from '../../components/fileButton/FileButton';
-import { useUpdateUserMutation } from '../../services/UserApiSlice';
-import { setCredentials } from '../../store/reducers/AuthSlice';
-import { IUser } from '../../models/IUser';
+import { useAppSelector } from '../../../hooks/redux';
+import { setCurrentPhoto } from '../../../store/reducers/PhotoSlice';
+import FileButton from '../../../components/fileButton/FileButton';
+import { useUpdateUserMutation } from '../../../services/UserApiSlice';
+import { setCredentials } from '../../../store/reducers/AuthSlice';
+import { IUser } from '../../../models/IUser';
 
-interface IUserMainPhotoProps
+interface IProfileMainPhotoProps
 {
     userState: any;
     sx?: object;
@@ -27,7 +27,7 @@ interface IUserMainPhotoProps
 }
 
 
-const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,isDropActive,...other}) => 
+const ProfileMainPhoto:FC<IProfileMainPhotoProps> = ({userState,isDropActive,...other}) => 
 {
   
   const [createPhoto, photoStatus] = useCreatePhotoMutation();
@@ -118,4 +118,4 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,isDropActive,...other}
   );
 }
 
-export default UserMainPhoto;
+export default ProfileMainPhoto;

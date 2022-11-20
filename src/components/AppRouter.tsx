@@ -9,8 +9,14 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Layout from '../layouts/dashboard/DashboardLayout';
 import ProfilePage from '../pages/ProfilePage';
-import { ALBUM_ROUTE, CHAT_ROUTE, FEED_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE } from '../utils/consts';
+import { ALBUM_ROUTE, CHAT_ROUTE, FEED_ROUTE, USERS_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE } from '../utils/consts';
 import UnauthorizePage from '../pages/UnauthorizePage';
+import UsersList from '../sections/usersList/UsersList';
+import UsersPage from '../pages/UsersPage';
+import ChatPage from '../pages/ChatPage';
+import FeedPage from '../pages/FeedPage';
+import AlbumsPage from '../pages/AlbumsPage';
+import UserPage from '../pages/UserPage';
 
 
 const AppRouter = () => {
@@ -59,9 +65,11 @@ const AppRouter = () => {
         <Route path="/user" element={<Layout/>} >
           <Route index element={<ProfilePage/>}/>
           <Route path={"/user" +  PROFILE_ROUTE} element={<ProfilePage/>}/>
-          <Route path={"/user" + CHAT_ROUTE} element={<ProfilePage/>}/>
-          <Route path={"/user" + FEED_ROUTE} element={<ProfilePage/>}/>
-          <Route path={"/user" +  ALBUM_ROUTE} element={<ProfilePage/>}/>
+          <Route path={"/user" + CHAT_ROUTE} element={<ChatPage/>}/>
+          <Route path={"/user" + USERS_ROUTE} element={<UsersPage/>}/>
+          <Route path={`/user${USERS_ROUTE}/:id`} element={<UserPage/>}/>
+          <Route path={"/user" + FEED_ROUTE} element={<FeedPage/>}/>
+          <Route path={"/user" +  ALBUM_ROUTE} element={<AlbumsPage/>}/>
         </Route>
         <Route path="*"  element={<Navigate to={"/user" +  PROFILE_ROUTE} replace/>}/>
         </>)

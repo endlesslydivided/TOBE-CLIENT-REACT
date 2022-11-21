@@ -30,10 +30,10 @@ const UserData:FC<IUserDataProps>= ({userState,...other}) => {
             <CardContent  sx={{ p: 0 }}>
                 <List disablePadding sx={{ p: 1 }}>
                   <ListItem value="09.04.2002" property="День рождения" icon={<DateRange/>}/>
-                  <ListItem value={userState.sex === 'M' ? 'Мужской' : 'Женский'} property="Пол" icon={<Wc/>}/>
+                  <ListItem value={userState?.sex} property="Пол" icon={<Wc/>}/>
 
-                  <ListItem value={userState.country} property="Страна" icon={<Language/>}/>
-                  <ListItem value={userState.city} property="Город" icon={<LocationCity/>}/>
+                  <ListItem value={userState?.country} property="Страна" icon={<Language/>}/>
+                  <ListItem value={userState?.city} property="Город" icon={<LocationCity/>}/>
 
                 </List>
             </CardContent>

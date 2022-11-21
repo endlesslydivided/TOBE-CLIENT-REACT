@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks/redux';
 import { setCurrentPhoto } from '../../../store/reducers/PhotoSlice';
 import FileButton from '../../../components/fileButton/FileButton';
-import { useUpdateUserMutation } from '../../../services/UserApiSlice';
+import { useUpdateUserMutation } from '../../../services/UsersApiSlice';
 import { setCredentials } from '../../../store/reducers/AuthSlice';
 import { IUser } from '../../../models/IUser';
 

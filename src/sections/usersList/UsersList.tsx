@@ -8,8 +8,10 @@ import { DateTimePicker } from '@mui/lab';
 import AvatarList from '../../components/avatarList';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { useGetUsersQuery } from '../../services/UserApiSlice';
+import { useGetPagedUsersQuery } from '../../services/UsersApiSlice';
 import FullScreenLoader from '../../components/FullScreenLoader';
+import { FriendsListItem, UsersListItem } from '../../components/avatarList/AvatarList';
+import { useAppSelector } from '../../hooks/redux';
 
 interface IUserListProps
 {
@@ -29,14 +31,19 @@ interface ITabPanelProps {
 const UsersList:FC<IUserListProps>= ({...other}) => {
   
     const [value, setValue] = useState(0);
+
     const [limit,setLimit] = useState(10);
     const [page,setPage] = useState(1);
 
-    const { data, error, isLoading }  = useGetUsersQuery({limit,page});
+    const userState :any = useAppSelector(state => state.auth.user);
+
+
+    const { data:users, error:errorUsers, isLoading:isLoadingUsers }  = useGetPagedUsersQuery({limit,page});
+    const { data:friends, error:errorFriends, isLoading:isLoadingFriends }  = useGetPagedUsersQuery({limit,page});
 
     const dispatch = useDispatch();
 
-    const checkQuery = (status:any) => 
+    const checkQuery = (error:any) => 
       {
           if (error) 
           {
@@ -51,24 +58,26 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
           }
       };
 
-    useEffect(() => checkQuery(error),[isLoading]);
-    
+    useEffect(() => checkQuery(errorUsers),[isLoadingUsers]);
+    useEffect(() => checkQuery(errorFriends),[isLoadingFriends]);
+
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
 
+
     return (
             <Card {...other}>
                 <Tabs variant="fullWidth" value={value} onChange={handleChange}>
-                    <Tab label={`Пользователи`} />
-                    <Tab label={`Друзья`} />
+                    <Tab label={`Пользователи ${users?.count ? users?.count - 1 : 0}`} />
+                    <Tab label={`Друзья ${friends?.count ? friends?.count : 0}`} />
                 </Tabs>
                 <CardContent  sx={{ p: 1,pb:0 }}>
                     <TabPanel value={value} index={0}>
                         {
-                            isLoading ? <FullScreenLoader/> :
-                            data?.rows ? <AvatarList membersList={data?.rows}/> : 
+                            isLoadingUsers ? <FullScreenLoader/> :
+                            users?.rows ? <AvatarList listItem={UsersListItem} membersList={users?.rows.filter((x:any)=> x.id !== userState.id)}/> : 
                             <Box sx={{ textAlign:"center",p:5}}>
                                 <Typography sx={{ display: 'inline'}} component="span" variant="body1" color="text.secondary">
                                     Ничего не найдено
@@ -79,8 +88,8 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
                     </TabPanel>
                     <TabPanel value={value} index={1}>
                         {
-                        isLoading ? <FullScreenLoader/> :
-                        data?.rows ? <AvatarList membersList={data?.rows}/> : 
+                        isLoadingFriends ? <FullScreenLoader/> :
+                        friends?.rows ? <AvatarList listItem={FriendsListItem} membersList={friends?.rows.filter((x:any) => x.id !== userState.id)}/> : 
                         <Typography>Ничего не найдено</Typography>
                         }
                     </TabPanel>

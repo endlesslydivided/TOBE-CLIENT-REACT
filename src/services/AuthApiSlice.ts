@@ -8,7 +8,8 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 url:'/auth/login',
                 method:'POST',
                 body: {...credentials}
-            })
+            }),
+            invalidatesTags: ['CurrentUser']    
         }),
         register: builder.mutation({
             query: (data) =>(
@@ -25,7 +26,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 url: `/auth/verifyemail/${verificationCode}`,
                 method: 'GET',
             }),
-            
+            invalidatesTags: ['CurrentUser']    
         }),
 
         logout: builder.mutation<void,void>({
@@ -33,17 +34,22 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 url: '/auth/logout',
                 method: 'GET',
                 credentials: 'include',
-            })
+            }),
+            invalidatesTags: ['CurrentUser']    
         }),
-        getMe: builder.mutation<any,void>({
+        getMe: builder.query<any,void>({
             query: () => ({
                 url: '/auth/me',
                 method: 'GET',
                 credentials: 'include',
-            })
+            }),
+            providesTags: (result, error, arg) => ['CurrentUser']
         }),
     })
 })
+
+
+
 
 
 export const {
@@ -51,4 +57,4 @@ export const {
     useRegisterMutation,
     useLogoutMutation,
     useVerifyEmailMutation,
-    useGetMeMutation} = authApiSlice;
+    useGetMeQuery} = authApiSlice;

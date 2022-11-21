@@ -8,10 +8,11 @@ import UserData from '../sections/profile/userData/UserData';
 import DragZone from '../components/dragZone';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGetUserQuery } from '../services/UserApiSlice';
+import { useGetUserQuery } from '../services/UsersApiSlice';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import FullScreenLoader from '../components/FullScreenLoader';
+import UserMainPhoto from '../sections/profile/userMainPhoto/UserMainPhoto';
 
 
 const UserPage = () => 
@@ -48,7 +49,7 @@ const UserPage = () =>
         <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={3} lg={3}>
-                    <ProfileMainPhoto sx={{height:"100%",alignItems:"center"}} isDropActive={isDropActive} userState={user}/>
+                    <UserMainPhoto sx={{height:"100%",alignItems:"center"}} userState={user}/>
                 </Grid>
                 <Grid item xs={12} md lg>
                     <UserData sx={{alignItems:"center",height:"100%"}}  userState={user}/>

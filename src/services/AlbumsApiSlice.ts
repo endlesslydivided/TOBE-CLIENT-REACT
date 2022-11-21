@@ -9,7 +9,8 @@ export const albumApiSlice = apiSlice.injectEndpoints({
                 method:'POST',
                 body: album,
                 credentials: 'include',
-            })
+            }),
+            invalidatesTags: ['Album']
         }),
         updateAlbum: builder.mutation({
             query: ({id,album}) =>({
@@ -17,8 +18,8 @@ export const albumApiSlice = apiSlice.injectEndpoints({
                 method:'POST',
                 body: album,
                 credentials: 'include',
-                }
-            )
+            }),
+            invalidatesTags:(result, error, arg) =>  [{type:'Album',id:arg.id},'Album']
         }),
         deleteAlbum: builder.mutation({
             query: ({ id }) =>
@@ -27,10 +28,12 @@ export const albumApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
                 credentials: 'include',
             }),
-            
+            invalidatesTags:(result, error, arg) =>  [{type:'Album',id:arg.id},'Album']
+
         })
     })
 })
+
 
 
 export const {

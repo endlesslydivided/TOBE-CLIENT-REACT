@@ -15,13 +15,11 @@ const ProfilePage = () =>
     const userState :any = useAppSelector(state => state.auth.user);
     const [isDropActive,setIsDropActive] = useState(false);
 
-
-
     return (
         <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
             <Grid container spacing={3}>
                 <Grid item xs={12} md={3} lg={3}>
-                    <UserMainPhoto sx={{height:"100%",alignItems:"center"}} userState={userState}/>
+                    <ProfileMainPhoto sx={{height:"100%",alignItems:"center"}} isDropActive={isDropActive} userState={userState}/>
                 </Grid>
                 <Grid item xs={12} md lg>
                     <UserData sx={{alignItems:"center",height:"100%"}}  userState={userState}/>

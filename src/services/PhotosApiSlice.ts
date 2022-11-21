@@ -9,7 +9,8 @@ export const photoApiSlice = apiSlice.injectEndpoints({
                 method:'POST',
                 body: photo,
                 credentials: 'include',
-            })
+            }),
+            invalidatesTags: ['Photo']
         }),
         updatePhoto: builder.mutation({
             query: ({id,photo}) =>({
@@ -17,8 +18,8 @@ export const photoApiSlice = apiSlice.injectEndpoints({
                 method:'POST',
                 body: photo,
                 credentials: 'include',
-                }
-            )
+            }),
+            invalidatesTags: (result, error, arg) => [{ type: 'Photo', id: arg.id },'Photo']
         }),
         deletePhoto: builder.mutation({
             query: ({ id }) =>
@@ -27,6 +28,7 @@ export const photoApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
                 credentials: 'include',
             }),
+            invalidatesTags:(result, error, arg) =>  [{type:'Photo',id:arg.id},'Photo']
             
         }),
 
@@ -35,7 +37,9 @@ export const photoApiSlice = apiSlice.injectEndpoints({
                 url: `/photos/${id}`,
                 method: 'GET',
                 credentials: 'include',
-            })
+            }),
+            providesTags: (result, error, arg) =>
+            [{ type: 'Photo' as const, id:arg.id }]
         }),
          
     })

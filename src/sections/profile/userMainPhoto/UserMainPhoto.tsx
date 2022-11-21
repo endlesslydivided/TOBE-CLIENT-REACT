@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks/redux';
 import { setCurrentPhoto } from '../../../store/reducers/PhotoSlice';
 import FileButton from '../../../components/fileButton/FileButton';
-import { useUpdateUserMutation } from '../../../services/UserApiSlice';
+import { useUpdateUserMutation } from '../../../services/UsersApiSlice';
 import { setCredentials } from '../../../store/reducers/AuthSlice';
 import { IUser } from '../../../models/IUser';
 
@@ -37,7 +37,11 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,...other}) =>
         bgColor="whitesmoke" fit="cover"
         />
         :
-        <EmojiEmotions/>
+        <Box sx={{height:"50vh",width:"100%",alignItems:"center",display:"flex",flexDirection:"column-reverse", justifyContent:"center",
+        color:"grey.500"}}>
+          <Typography>Фото отсутствует</Typography>
+          <EmojiEmotions/>
+        </Box>
       }
     </Card>
   );

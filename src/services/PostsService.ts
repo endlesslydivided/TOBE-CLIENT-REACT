@@ -1,46 +1,55 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/dist/query/react"
-import { IPost } from "../models/IPost"
+import { apiSlice } from "./ApiSlice";
 
-export const postAPI = createApi({
-    reducerPath: 'postAPI',
-    baseQuery: fetchBaseQuery({baseUrl:process.env.REACT_APP_API_URL}),
-    tagTypes:['Post'],
-    endpoints:(build)=>
-    ({
-        fetchAllPosts: build.query<IPost[],number>({
-            query: (limit:number = 5) =>(
-                {
-                    url: '/posts',
-                    params:{limit}
-                }
-            ),
-            providesTags:result => ['Post']
-        }),
-        createPost: build.mutation<IPost,IPost>({
-            query:(post)=>
-            ({
+
+export const postsApiSlice = apiSlice.injectEndpoints({   
+    endpoints: builder => ({
+        createPost: builder.mutation({
+            query: (post) => ({
                 url:'/posts',
                 method:'POST',
-                body: post
+                body: post,
+                credentials: 'include',
             }),
-            invalidatesTags: ['Post']
+            invalidatesTags: ['Feed','Post']          
         }),
-        updatePost: build.mutation<IPost,IPost>({
-            query:(post)=>
-            ({
-                url:`/posts/${post.id}`,
-                method:'PUT',
-                body: post
+
+        updatePost: builder.mutation({
+            query: ({id,photo}) =>({
+                url: `/posts/${id}`,
+                method:'POST',
+                body: photo,
+                credentials: 'include',
             }),
-            invalidatesTags: ['Post']
+            invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id },'Post','Feed']          
         }),
-        deletePost: build.mutation<IPost,IPost>({
-            query:(post)=>
+
+        deletePost: builder.mutation({
+            query: ({ id }) =>
             ({
-                url:`/posts/${post.id}`,
-                method:'DELETE'
+                url: `/posts/${id}`,
+                method: 'DELETE',
+                credentials: 'include',
+            }),  
+            invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id },'Post','Feed']          
+      
+        }),
+
+        getOnePost: builder.query({
+            query: ({id}) => ({
+                url: `/posts/${id}`,
+                method: 'GET',
+                credentials: 'include',
             }),
-            invalidatesTags: ['Post']
-        })
+            providesTags: (result, error, arg) =>
+            [{ type: 'Post' as const, id:arg.id }]
+        }),
+         
     })
 })
+
+
+export const {
+useCreatePostMutation,
+useUpdatePostMutation,
+useDeletePostMutation,
+useGetOnePostQuery} = postsApiSlice;

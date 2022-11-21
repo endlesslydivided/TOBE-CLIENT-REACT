@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import{Routes,Route, RouteProps,useLocation, Navigate, createBrowserRouter} from 'react-router-dom'
 import { useAppSelector } from '../hooks/redux';
-import { useGetMeMutation } from '../services/AuthApiSlice';
+import { useGetMeQuery } from '../services/AuthApiSlice';
 import {setCredentials } from '../store/reducers/AuthSlice';
 import FullScreenLoader from './FullScreenLoader'
 import { anonymousRoutesManager, roleRoutesManager } from '../utils/routes';
@@ -21,33 +21,18 @@ import UserPage from '../pages/UserPage';
 
 const AppRouter = () => {
 
-  const [getMe, {isLoading,isError}] = useGetMeMutation();
+  const {data:userData,isLoading,isError} = useGetMeQuery();
   const dispatch = useDispatch();
   const user :any = useAppSelector(state => state?.auth?.user);
 
-  const userDataFetching =  async () => await getMe().unwrap().then((result) =>
-  {
-    dispatch(setCredentials({...result}))
-  })
-  // .catch((error) =>
-  // {
-  //   // if (Array.isArray((error as any).data.error))
-  //   // {
-  //   //     (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
-  //   // } 
-  //   // else 
-  //   // {
-  //   //    toast.error((error as any).data.message, {position: 'top-right',});
-  //   // }
-  // });
   
   useEffect(() =>
   {
-      if(!user)
+      if(!user && userData)
       {      
-        userDataFetching()
+        dispatch(setCredentials({...userData}))
       }
-  },[])
+  },[isLoading])
 
   const location = useLocation();
 

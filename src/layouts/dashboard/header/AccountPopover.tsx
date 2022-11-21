@@ -73,7 +73,8 @@ export default function AccountPopover()
           }),
         }}
       >
-        <Avatar src={process.env.REACT_APP_API_URL + user?.photo.path}  alt="photoURL" />
+        <Avatar src={user?.photo?.path && process.env.REACT_APP_API_URL + user?.photo?.path}  
+                alt={user?.photo?.path && process.env.REACT_APP_API_URL + user?.photo?.path} />
       </IconButton>
 
       <Popover open={Boolean(open)} anchorEl={open} onClose={handleClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

@@ -1,3 +1,4 @@
+import { logOut, setCredentials } from "../store/reducers/AuthSlice";
 import { apiSlice } from "./ApiSlice";
 
 
@@ -43,7 +44,20 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
                 credentials: 'include',
             }),
-            providesTags: (result, error, arg) => ['CurrentUser']
+            providesTags: ['CurrentUser'],
+            onQueryStarted: async (id, {dispatch, queryFulfilled }) =>
+            {
+                try 
+                {
+                    const { data } = await queryFulfilled;
+                    dispatch(setCredentials({...data}));
+                } 
+                catch (error) 
+                {
+                    dispatch(logOut())
+                }
+                
+            }
         }),
     })
 })

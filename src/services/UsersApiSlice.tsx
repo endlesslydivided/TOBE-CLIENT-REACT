@@ -42,8 +42,19 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             }),
             providesTags: (result, error, arg) =>
             result
-              ? [...result.rows.map(({ id }:any ) => ({ type: 'FriendRequest' as const, id })),'FriendRequest']
-              : ['FriendRequest'],
+              ? [...result.rows.map(({ id }:any ) => ({ type: 'FriendsRequest' as const, id })),'FriendsRequest']
+              : ['FriendsRequest'],
+        }),
+        getPagedAvoidedRequestsByUser: builder.query({
+            query: ({id,limit = 10,page = 1}) => ({
+                url:`/users/${id}/avoidedRequests`,
+                method:`GET`,
+                params:{limit,page}
+            }),
+            providesTags: (result, error, arg) =>
+            result
+              ? [...result.rows.map(({ id }:any ) => ({ type: 'AvoidedRequest' as const, id })),'AvoidedRequest']
+              : ['AvoidedRequest'],
         }),
         getPagedPostsByUser: builder.query({
             query: ({id,limit = 10,page = 1}) => ({
@@ -94,10 +105,16 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
 export const {
     useUpdateUserMutation,
+
     useGetUserQuery,
+
     useGetPagedUsersQuery,
+
     useGetPagedFriendsByUserQuery,
+
     useGetPagedFriendsRequestsByUserQuery,
+    useGetPagedAvoidedRequestsByUserQuery,
+
     useGetPagedPostsByUserQuery,
     useGetPagedDialogsByUserQuery,
     useGetPagedFeedByUserQuery

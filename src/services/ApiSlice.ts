@@ -54,6 +54,7 @@ export const apiSlice = createApi({
               'Photo',
               'Friend',
               'FriendsRequest',
+              'AvoidedRequest',
               'User',
               'CurrentUser',
               'Album',

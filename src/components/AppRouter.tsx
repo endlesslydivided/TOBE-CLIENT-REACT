@@ -25,14 +25,6 @@ const AppRouter = () => {
   const dispatch = useDispatch();
   const user :any = useAppSelector(state => state?.auth?.user);
 
-  
-  useEffect(() =>
-  {
-      if(!user && userData)
-      {      
-        dispatch(setCredentials({...userData}))
-      }
-  },[isLoading])
 
   const location = useLocation();
 

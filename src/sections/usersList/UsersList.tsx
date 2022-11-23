@@ -1,5 +1,5 @@
 import { styled } from  '@mui/material/styles';
-import { Card, CardContent, CardHeader, Divider, List, ListItemText, Tab, Tabs } from '@mui/material';
+import { Card, CardContent, CardHeader, Divider, FormControlLabel, FormGroup, List, ListItemText, Switch, Tab, Tabs } from '@mui/material';
 import { FC, ReactNode, useEffect, useState } from 'react';
 import { Add, DateRange, Language, LocationCity, Wc } from '@mui/icons-material';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
@@ -8,10 +8,12 @@ import { DateTimePicker } from '@mui/lab';
 import AvatarList from '../../components/avatarList';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { useGetPagedUsersQuery } from '../../services/UsersApiSlice';
+import { useGetPagedAvoidedRequestsByUserQuery, useGetPagedFriendsByUserQuery, useGetPagedFriendsRequestsByUserQuery, useGetPagedUsersQuery } from '../../services/UsersApiSlice';
 import FullScreenLoader from '../../components/FullScreenLoader';
-import { FriendsListItem, UsersListItem } from '../../components/avatarList/AvatarList';
+import { FriendsListItem, RequestListItem, UsersListItem } from '../../components/avatarList/AvatarList';
 import { useAppSelector } from '../../hooks/redux';
+import { Search, SearchIconWrapper, StyledInputBase } from '../../components/search/Search';
+import SearchIcon from '@mui/icons-material/Search';
 
 interface IUserListProps
 {
@@ -34,14 +36,16 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
 
     const [limit,setLimit] = useState(10);
     const [page,setPage] = useState(1);
+    const [checkRequest,setCheckRequest] = useState(false);
 
     const userState :any = useAppSelector(state => state.auth.user);
 
 
     const { data:users, error:errorUsers, isLoading:isLoadingUsers }  = useGetPagedUsersQuery({limit,page});
-    const { data:friends, error:errorFriends, isLoading:isLoadingFriends }  = useGetPagedUsersQuery({limit,page});
+    const { data:friends, error:errorFriends, isLoading:isLoadingFriends }  = useGetPagedFriendsByUserQuery({id:userState.id,limit,page});
+    const { data:requests, error:errorRequests, isLoading:isLoadingRequests}  = useGetPagedFriendsRequestsByUserQuery({id:userState.id,limit,page});
+    const { data:avoided, error:errorAvoided, isLoading:isLoadingAvoided}  = useGetPagedAvoidedRequestsByUserQuery({id:userState.id,limit,page});
 
-    const dispatch = useDispatch();
 
     const checkQuery = (error:any) => 
       {
@@ -60,11 +64,19 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
 
     useEffect(() => checkQuery(errorUsers),[isLoadingUsers]);
     useEffect(() => checkQuery(errorFriends),[isLoadingFriends]);
+    useEffect(() => checkQuery(errorRequests),[isLoadingRequests]);
+    useEffect(() => checkQuery(errorAvoided),[isLoadingAvoided]);
 
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
       setValue(newValue);
     };
+
+    const notFound = (<Box sx={{ textAlign:"center",p:5}}>
+                          <Typography sx={{ display: 'inline'}} component="span" variant="body1" color="text.secondary">
+                              Ничего не найдено
+                          </Typography>         
+                      </Box> )
 
 
     return (
@@ -72,25 +84,61 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
                 <Tabs variant="fullWidth" value={value} onChange={handleChange}>
                     <Tab label={`Пользователи ${users?.count ? users?.count - 1 : 0}`} />
                     <Tab label={`Друзья ${friends?.count ? friends?.count : 0}`} />
+                    <Tab label={`Заявки ${requests?.count ? requests?.count : 0}`} />
+
                 </Tabs>
                 <CardContent  sx={{ p: 1,pb:0 }}>
                     <TabPanel value={value} index={0}>
                         {
-                            isLoadingUsers ? <FullScreenLoader/> :
-                            users?.rows ? <AvatarList listItem={UsersListItem} membersList={users?.rows.filter((x:any)=> x.id !== userState.id)}/> : 
-                            <Box sx={{ textAlign:"center",p:5}}>
-                                <Typography sx={{ display: 'inline'}} component="span" variant="body1" color="text.secondary">
-                                    Ничего не найдено
-                                </Typography>         
-                            </Box>        
+                          isLoadingUsers ? <FullScreenLoader/> :
+                          users?.rows && users?.count - 1 !== 0  ? <AvatarList listItem={UsersListItem} membersList={users?.rows.filter((x:any)=> x.id !== userState.id)}/> : 
+                          notFound    
                         }
                         
                     </TabPanel>
                     <TabPanel value={value} index={1}>
                         {
-                        isLoadingFriends ? <FullScreenLoader/> :
-                        friends?.rows ? <AvatarList listItem={FriendsListItem} membersList={friends?.rows.filter((x:any) => x.id !== userState.id)}/> : 
-                        <Typography>Ничего не найдено</Typography>
+                          isLoadingFriends ? <FullScreenLoader/> :
+                          friends?.rows && friends?.count !== 0 ? <AvatarList listItem={FriendsListItem} membersList={friends?.rows}/> : 
+                          notFound     
+                        }
+                    </TabPanel>
+                    <TabPanel value={value} index={2}>
+                    <FormGroup>
+                      <Grid container sx={{display:"flex"}}>
+                        <Grid item xs={8}>
+                          <Search>
+                            <SearchIconWrapper>
+                              <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                              placeholder="Search…"
+                              inputProps={{ 'aria-label': 'search' }}
+                            />
+                          </Search>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControlLabel control=
+                          {<Switch onChange={() => setCheckRequest(!checkRequest)} checked={checkRequest}/>} 
+                          label="Отвергнутые заявки" />
+                        </Grid>
+                      </Grid>
+                      
+                    </FormGroup>
+                        {
+                          checkRequest ? 
+                          (
+                            isLoadingAvoided ? <FullScreenLoader/> :
+                            avoided?.rows && avoided?.count !== 0 ? <AvatarList listItem={RequestListItem} membersList={avoided?.rows}/> : 
+                            notFound      
+                          )
+                          :
+                          (
+                            isLoadingRequests ? <FullScreenLoader/> :
+                            requests?.rows && requests?.count !== 0 ? <AvatarList listItem={RequestListItem} membersList={requests?.rows}/> : 
+                            notFound      
+                          )
+                          
                         }
                     </TabPanel>
                 </CardContent>

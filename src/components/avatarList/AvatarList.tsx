@@ -127,18 +127,21 @@ export const  UsersListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
                   </Typography>         
               }
             />
-            <Box display="flex" >
-              <ListItemButton sx={{bgcolor:"grey.200",borderRadius:"10px 0 0 10px",width:"50%"}}  component="a" onClick={() => writeMessageHandler()}>
-                <ListItemText sx={{textAlign:'center'}}  primary="Написать сообщение" />
-              </ListItemButton>
-              <Divider orientation="vertical" flexItem />
-              <ListItemButton sx={{bgcolor:"grey.200",borderRadius:"0 10px 10px 0",justifyContent:"center",width:"50%"}}  component="a" 
-              onClick={() => friendClickHandler(member.id)}>
-                <Box sx={{display:"flex"}}>
-                {renderButton(member?.id)}
-                </Box>
-              </ListItemButton>
-            </Box>
+            {userState.id !== member.id &&
+            ( <Box display="flex" >
+            <ListItemButton sx={{bgcolor:"grey.200",borderRadius:"10px 0 0 10px",width:"50%"}}  component="a" onClick={() => writeMessageHandler()}>
+              <ListItemText sx={{textAlign:'center'}}  primary="Написать сообщение" />
+            </ListItemButton>
+            <Divider orientation="vertical" flexItem />
+            <ListItemButton sx={{bgcolor:"grey.200",borderRadius:"0 10px 10px 0",justifyContent:"center",width:"50%"}}  component="a" 
+            onClick={() => friendClickHandler(member.id)}>
+              <Box sx={{display:"flex"}}>
+              {renderButton(member?.id)}
+              </Box>
+            </ListItemButton>
+          </Box>)
+            }
+           
         </Grid>
       </Grid>
     </ListItem>

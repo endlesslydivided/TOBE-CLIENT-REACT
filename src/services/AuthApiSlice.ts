@@ -9,8 +9,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 url:'/auth/login',
                 method:'POST',
                 body: {...credentials}
-            }),
-            invalidatesTags: ['CurrentUser']    
+            })
         }),
         register: builder.mutation({
             query: (data) =>(
@@ -49,7 +48,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
             {
                 try 
                 {
-                    const { data } = await queryFulfilled;
+                    const {data} = await queryFulfilled;
                     dispatch(setCredentials({...data}));
                 } 
                 catch (error) 

@@ -44,6 +44,7 @@ const AppRouter = () => {
           <Route path={"/user" +  PROFILE_ROUTE} element={<ProfilePage/>}/>
           <Route path={"/user" + CHAT_ROUTE} element={<ChatPage/>}/>
           <Route path={"/user" + USERS_ROUTE} element={<UsersPage/>}/>
+          <Route path={`/user${USERS_ROUTE}/${user.id}`} element={<Navigate to={"/user" +  PROFILE_ROUTE} replace/>}/>
           <Route path={`/user${USERS_ROUTE}/:id`} element={<UserPage/>}/>
           <Route path={"/user" + FEED_ROUTE} element={<FeedPage/>}/>
           <Route path={"/user" +  ALBUM_ROUTE} element={<AlbumsPage/>}/>

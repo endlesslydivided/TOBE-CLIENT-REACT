@@ -14,12 +14,14 @@ import { FriendsListItem, RequestListItem, UsersListItem } from '../../component
 import { useAppSelector } from '../../hooks/redux';
 import { Search, SearchIconWrapper, StyledInputBase } from '../../components/search/Search';
 import SearchIcon from '@mui/icons-material/Search';
+import { ObjectPair } from 'zod';
 
 interface IUserListProps
 {
     sex?: string,
     age?: number,
-    sx?: object;
+    sx?: object,
+    filters: object
 }
 
 interface ITabPanelProps {
@@ -30,7 +32,7 @@ interface ITabPanelProps {
     sx?:any
   }
 
-const UsersList:FC<IUserListProps>= ({...other}) => {
+const UsersList:FC<IUserListProps>= ({filters,...other}) => {
   
     const [value, setValue] = useState(0);
 
@@ -41,10 +43,10 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
     const userState :any = useAppSelector(state => state.auth.user);
 
 
-    const { data:users, error:errorUsers, isLoading:isLoadingUsers }  = useGetPagedUsersQuery({limit,page});
-    const { data:friends, error:errorFriends, isLoading:isLoadingFriends }  = useGetPagedFriendsByUserQuery({id:userState.id,limit,page});
-    const { data:requests, error:errorRequests, isLoading:isLoadingRequests}  = useGetPagedFriendsRequestsByUserQuery({id:userState.id,limit,page});
-    const { data:avoided, error:errorAvoided, isLoading:isLoadingAvoided}  = useGetPagedAvoidedRequestsByUserQuery({id:userState.id,limit,page});
+    const { data:users, error:errorUsers, isLoading:isLoadingUsers, }  = useGetPagedUsersQuery(filters,{refetchOnMountOrArgChange:true});
+    const { data:friends, error:errorFriends, isLoading:isLoadingFriends }  = useGetPagedFriendsByUserQuery({id:userState.id,filters:filters},{refetchOnMountOrArgChange:true});
+    const { data:requests, error:errorRequests, isLoading:isLoadingRequests}  = useGetPagedFriendsRequestsByUserQuery({id:userState.id,filters:filters},{refetchOnMountOrArgChange:true});
+    const { data:avoided, error:errorAvoided, isLoading:isLoadingAvoided}  = useGetPagedAvoidedRequestsByUserQuery({id:userState.id,filters:filters},{refetchOnMountOrArgChange:true});
 
 
     const checkQuery = (error:any) => 
@@ -82,7 +84,7 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
     return (
             <Card {...other}>
                 <Tabs variant="fullWidth" value={value} onChange={handleChange}>
-                    <Tab label={`Пользователи ${users?.count ? users?.count - 1 : 0}`} />
+                    <Tab label={`Пользователи ${users?.count ? users?.count : 0}`} />
                     <Tab label={`Друзья ${friends?.count ? friends?.count : 0}`} />
                     <Tab label={`Заявки ${requests?.count ? requests?.count : 0}`} />
 
@@ -91,7 +93,7 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
                     <TabPanel value={value} index={0}>
                         {
                           isLoadingUsers ? <FullScreenLoader/> :
-                          users?.rows && users?.count - 1 !== 0  ? <AvatarList listItem={UsersListItem} membersList={users?.rows.filter((x:any)=> x.id !== userState.id)}/> : 
+                          users?.rows && users?.count !== 0  ? <AvatarList listItem={UsersListItem} membersList={users?.rows}/> : 
                           notFound    
                         }
                         
@@ -104,26 +106,10 @@ const UsersList:FC<IUserListProps>= ({...other}) => {
                         }
                     </TabPanel>
                     <TabPanel value={value} index={2}>
-                    <FormGroup>
-                      <Grid container sx={{display:"flex"}}>
-                        <Grid item xs={8}>
-                          <Search>
-                            <SearchIconWrapper>
-                              <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                              placeholder="Search…"
-                              inputProps={{ 'aria-label': 'search' }}
-                            />
-                          </Search>
-                        </Grid>
-                        <Grid item xs={4}>
+                    <FormGroup sx={{mx:2}}>
                           <FormControlLabel control=
                           {<Switch onChange={() => setCheckRequest(!checkRequest)} checked={checkRequest}/>} 
                           label="Отвергнутые заявки" />
-                        </Grid>
-                      </Grid>
-                      
                     </FormGroup>
                         {
                           checkRequest ? 

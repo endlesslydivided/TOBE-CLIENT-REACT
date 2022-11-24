@@ -13,10 +13,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
 
         }),
         getPagedUsers: builder.query({
-            query: ({limit = 10,page = 1}) => ({
+            query: (filters) => ({
                 url:`/users`,
                 method:`GET`,
-                params:{limit,page}
+                params:filters
             }),
             providesTags: (result, error, arg) =>
             result
@@ -24,10 +24,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
               : ['User'],
         }),
         getPagedFriendsByUser: builder.query({
-            query: ({id,limit = 10,page = 1}) => ({
+            query: ({id,filters}) => ({
                 url:`/users/${id}/friends`,
                 method:`GET`,
-                params:{limit,page}
+                params:filters
             }),
             providesTags: (result, error, arg) =>
             result
@@ -35,10 +35,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
               : ['Friend'],
         }),
         getPagedFriendsRequestsByUser: builder.query({
-            query: ({id,limit = 10,page = 1}) => ({
+            query: ({id,filters}) => ({
                 url:`/users/${id}/requests`,
                 method:`GET`,
-                params:{limit,page}
+                params: filters
             }),
             providesTags: (result, error, arg) =>
             result
@@ -46,10 +46,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
               : ['FriendsRequest'],
         }),
         getPagedAvoidedRequestsByUser: builder.query({
-            query: ({id,limit = 10,page = 1}) => ({
+            query: ({id,filters}) => ({
                 url:`/users/${id}/avoidedRequests`,
                 method:`GET`,
-                params:{limit,page}
+                params:filters
             }),
             providesTags: (result, error, arg) =>
             result
@@ -57,10 +57,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
               : ['AvoidedRequest'],
         }),
         getPagedPostsByUser: builder.query({
-            query: ({id,limit = 10,page = 1}) => ({
+            query: ({id,filters}) => ({
                 url:`/users/${id}/posts`,
                 method:`GET`,
-                params:{limit,page}
+                params: filters
             }),
             providesTags: (result, error, arg) =>
             result
@@ -68,10 +68,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
               : ['Post'],
         }),
         getPagedDialogsByUser: builder.query({
-            query: ({id,limit = 10,page = 1}) => ({
+            query: ({id,filters}) => ({
                 url:`/users/${id}/dialogs`,
                 method:`GET`,
-                params:{limit,page}
+                params:filters
             }),
             providesTags: (result, error, arg) =>
             result

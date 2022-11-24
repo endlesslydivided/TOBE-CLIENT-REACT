@@ -20,7 +20,7 @@ export const store = configureStore({
         file: fileReducer
     },
     middleware:(getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(apiSlice.middleware),
+        getDefaultMiddleware({serializableCheck: false}).concat(apiSlice.middleware),
     devTools: true
   });
 

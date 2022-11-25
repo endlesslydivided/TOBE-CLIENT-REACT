@@ -6,28 +6,30 @@ import Image from 'mui-image';
 import UserMainPhoto from '../sections/profile/userMainPhoto/UserMainPhoto';
 import UserData from '../sections/profile/userData/UserData';
 import DragZone from '../components/dragZone';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import UsersList from '../sections/usersList/UsersList';
 import UsersFilter from '../sections/usersList/UsersFilters';
 import { Search, SearchIconWrapper, StyledInputBase } from '../components/search/Search';
 import SearchIcon from '@mui/icons-material/Search';
 
+const initialFilters= {
+    sex: '',
+    search: '',
+    country: '',
+    city:'',
+    orderBy:'createdAt',
+    orderDirection: 'DESC',
+    havePhoto: false
+}
 
 const UsersPage = () => 
 {
     const userState :any = useAppSelector(state => state.auth.user);
     const [isDropActive,setIsDropActive] = useState(false);
-    const [filters,setFilters] = useState(
-        {
-            sex: '',
-            search: '',
-            contry: '',
-            city:'',
-            orderBy:'createdAt',
-            orderDirection: 'DESC',
-            havePhoto: false
-        }
-    )
+    const [filters,setFilters] = useState(initialFilters)
+
+    useEffect(() => {},[filters])
+
 
     return (
         <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
@@ -40,6 +42,7 @@ const UsersPage = () =>
                                     <SearchIcon />
                                 </SearchIconWrapper>
                                 <StyledInputBase
+                                    value={filters.search}
                                     onChange={(e) => setFilters({...filters,search:e.target.value})}
                                     sx={{width:'100%'}}
                                     placeholder="Поиск..."
@@ -54,7 +57,7 @@ const UsersPage = () =>
                     <UsersList filters={filters}/>
                 </Grid>
                 <Grid item xs={4} md={4} lg={4}>
-                    <UsersFilter setFilters={setFilters} filters={filters} />
+                    <UsersFilter setFilters={setFilters} initial={initialFilters} filters={filters} />
                 </Grid>
                 
             </Grid>

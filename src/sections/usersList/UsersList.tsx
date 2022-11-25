@@ -36,8 +36,6 @@ const UsersList:FC<IUserListProps>= ({filters,...other}) => {
   
     const [value, setValue] = useState(0);
 
-    const [limit,setLimit] = useState(10);
-    const [page,setPage] = useState(1);
     const [checkRequest,setCheckRequest] = useState(false);
 
     const userState :any = useAppSelector(state => state.auth.user);

@@ -17,6 +17,8 @@ const initialFilters= {
     search: '',
     country: '',
     city:'',
+    page: 1,
+    limit: 10,
     orderBy:'createdAt',
     orderDirection: 'DESC',
     havePhoto: false

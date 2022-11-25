@@ -33,7 +33,8 @@ export const roleRoutesManager=
             {
                 route: ALBUM_ROUTE,
                 Icon: PhotoLibraryOutlined,
-                text: 'Фотографии'
+                text: 'Фотографии',
+                disabled: true
             },
             ]
     },

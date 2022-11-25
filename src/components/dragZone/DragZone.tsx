@@ -20,9 +20,6 @@ const DragZone= ({children,extensions,isDropActive,setFile,innerText = "Put your
         setFile(acceptedFiles[0]);
     }, [])
     const {getRootProps, getInputProps} = useDropzone({onDrop})
-  
-
-
 
     if(isDropActive)
     {

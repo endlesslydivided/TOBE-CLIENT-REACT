@@ -1,4 +1,4 @@
-
+//@ts-nocheck
 import { styled } from  '@mui/material/styles';
 import { Card, CardContent, CardHeader, Divider, FormControlLabel, FormGroup, List, ListItemText, Switch, Tab, Tabs, TextField } from '@mui/material';
 import { FC, ReactNode, useEffect, useRef, useState } from 'react';
@@ -42,8 +42,9 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) => {
 
     const methods = useForm<PostInput>({resolver: zodResolver(postSchema),});
     const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
+    const [files,setFiles] = useState();
 
-		const TFRef = useRef(null);
+    const TFRef = useRef(null);
 
     const [createPost,{ isLoading, isSuccess, error, isError }]  = useCreatePostMutation();
 
@@ -74,76 +75,81 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) => {
     };
 
 
-//     const addMainPhoto = async (file:File| null) =>
-//     {
-//     if(!file)
-//     {
-//       toast.error("Выберите изображение", {position: 'top-right',}); 
-//       return; 
-//     }
-//     const albumData = await createAlbum({name:"Фото профиля",userId:userState.id}).unwrap();
-//     dispatch(setCurrentAlbum({...albumData})); 
+    const addAttachments = async (attachments:File[]| File) =>
+    {
+      if(files.length + attachments.length > 10)
+      {
+        toast.error("Максимальное количество прикреплений - 10 файлов", {position: 'top-right',}); 
+        return; 
+      }
+      if(!attachments)
+      {
+        toast.error("Выберите документы или изображения", {position: 'top-right',}); 
+        return; 
+      }
 
-//     if (albumData) 
-//     {
-//       const formData = new FormData();
-//       let blob;
-//       const fr = new FileReader()
-//       fr.readAsArrayBuffer(file)
-//       fr.onload = async () => 
-//       {
-//           blob = new Blob([fr.result],{type:file.type});
-
-//           // const url = URL.createObjectURL(blob, {type: "image/png"});
-//           // const a = document.createElement("a")
-//           // a.href = url 
-//           // a.download = "image"
-//           // a.click()
-
-//           formData.append('file', blob,file.name);
-//           formData.append('albumId',albumData[0].id);
-//           formData.append('description', '');
-          
-//           const photoData = await createPhoto(formData).unwrap();
-//           dispatch(setCurrentPhoto({...photoData})); 
-//           const userData = await updateUser({id:userState.id, dto: {mainPhoto: photoData.id}}).unwrap();
-//           dispatch(setCredentials({...userState,mainPhoto: userData.mainPhoto}))
-//       }  
-//     }   
-//   }
+      if(Array.isArray(attachments))
+      {
+        attachments.forEach(file =>
+          {
+            const fr = new FileReader();
+            fr.readAsArrayBuffer(file)
+            fr.onload = async () => 
+            {
+              let blob = new Blob([fr.result],{type:file.type});
+              setFiles([...files,{data:blob,name:file.name}]);
+            }  
+          }
+        )
+      }
+      else
+      {
+        const fr = new FileReader();
+        fr.readAsArrayBuffer(attachments)
+        fr.onload = async () => 
+        {
+            let blob = new Blob([fr.result],{type:attachments.type});
+            setFiles([...files,{data:blob,name:attachments.name}]);
+        }  
+      }
+       
+  }
 
   return (
-    <Card {...other}>
+    <Card {...other} sx={{ p: 2}}>
       <FormProvider {...methods}>
-        <Box component='form'  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' maxWidth='27rem'  width='100%'>
-					<Grid container>
-
+        <CardContent component='form' sx={{ p: 1}}  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' width='100%'>
+          <Grid container sx={{display:"flex",justifyContent:"center"}} spacing={1} >
 					{
 						isDropActive?
-						<>
-							<Grid item xs={12} md={12}>
-								<TextField
-									id="content-field"
-									label="Контент"
-									multiline
-									ref={TFRef}
-									maxRows={10}
-									value={}
-								/>
-							</Grid>
-							<Grid item xs={1} md={1}>
-								<FileButton sx={{height:"50vh",width:"100%",color:"red"}} setFile={}>
-									<Add/>
-								</FileButton>
-							</Grid>
-						</>
-						:
-						<DragZone isDropActive={isDropActive} setFile={}>
+            <DragZone isDropActive={isDropActive} setFiles={addAttachments}>
 							<Add/>
 						</DragZone>
+            :
+						<>
+                <Grid item xs={6} row>
+                  <TextField id="title-field" name='title' size="small"  sx={{width:"100%"}}  label="Заголовок"/>
+                </Grid>
+
+                <Grid item xs={6} row>
+                  <TextField id="title-field" name='description' size="small"  sx={{width:"100%"}}  label="Описание"/>
+                </Grid>
+
+                <Grid item xs={12} row>
+                  <TextField id="content-field" name='content' size="small"  sx={{width:"100%"}} 	label="Контент"	multiline	ref={TFRef} maxRows={10}/>
+                </Grid>
+
+
+                <Grid item xs={12} row>
+                  <FileButton sx={{color:"red"}} setFile={addAttachments}>
+                    <Add/>
+                    <Typography variant="body2" color="text.secondary" sx={{py:1}}>Прикрепление</Typography>
+                  </FileButton>
+                </Grid>
+						</>
 					}
-					</Grid>
-				</Box>
+          </Grid>
+				</CardContent>
 			</FormProvider>
     </Card>
   );

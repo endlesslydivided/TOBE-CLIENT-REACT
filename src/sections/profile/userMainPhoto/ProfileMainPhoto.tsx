@@ -69,36 +69,31 @@ const ProfileMainPhoto:FC<IProfileMainPhotoProps> = ({userState,isDropActive,...
       toast.error("Выберите изображение", {position: 'top-right',}); 
       return; 
     }
-    const albumData = await createAlbum({name:"Фото профиля",userId:userState.id}).unwrap();
-    dispatch(setCurrentAlbum({...albumData})); 
-
-    if (albumData) 
+    const formData = new FormData();
+    let blob;
+    const fr = new FileReader()
+    fr.readAsArrayBuffer(file)
+    fr.onload = async () => 
     {
-      const formData = new FormData();
-      let blob;
-      const fr = new FileReader()
-      fr.readAsArrayBuffer(file)
-      fr.onload = async () => 
-      {
-          blob = new Blob([fr.result],{type:file.type});
+        blob = new Blob([fr.result],{type:file.type});
 
-          // const url = URL.createObjectURL(blob, {type: "image/png"});
-          // const a = document.createElement("a")
-          // a.href = url 
-          // a.download = "image"
-          // a.click()
+        // const url = URL.createObjectURL(blob, {type: "image/png"});
+        // const a = document.createElement("a")
+        // a.href = url 
+        // a.download = "image"
+        // a.click()
 
-          formData.append('file', blob,file.name);
-          formData.append('albumId',albumData[0].id);
-          formData.append('description', '');
-          
-          const photoData = await createPhoto(formData).unwrap();
-          dispatch(setCurrentPhoto({...photoData})); 
-          const userData = await updateUser({id:userState.id, dto: {mainPhoto: photoData.id}}).unwrap();
-          dispatch(setCredentials({...userState,mainPhoto: userData.mainPhoto}))
-      }  
-    }   
+        formData.append('file', blob,file.name);
+        formData.append('albumId',userState.albums.find(x => x.name === 'Фото профиля'));
+        formData.append('description', '');
+        
+        const photoData = await createPhoto(formData).unwrap();
+        dispatch(setCurrentPhoto({...photoData})); 
+        await updateUser({id:userState.id, dto: {mainPhoto: photoData.id}}).unwrap();
+    }     
   }
+
+  
 
   return (
     <Card {...other}>

@@ -14,12 +14,16 @@ import { Add } from '@mui/icons-material';
 //   children?: React.ReactNode;
 // }
 
-const DragZone= ({children,extensions,isDropActive,setFile,innerText = "Put your files here!",...other}) => 
+const DragZone= ({children,extensions,maxFiles,isDropActive,isMultiple,setFile,innerText = "Put your files here!",...other}) => 
 {
     const onDrop = useCallback( (acceptedFiles:any) => {
         setFile(acceptedFiles[0]);
     }, [])
-    const {getRootProps, getInputProps} = useDropzone({onDrop})
+    const onDropMultiple = useCallback((acceptedFiles:any) => 
+    {
+      setFile(acceptedFiles);
+    }, [])
+    const {getRootProps, getInputProps} = useDropzone({onDrop: (isMultiple ? onDropMultiple : onDrop)})
 
     if(isDropActive)
     {

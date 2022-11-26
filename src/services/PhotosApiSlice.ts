@@ -10,7 +10,7 @@ export const photoApiSlice = apiSlice.injectEndpoints({
                 body: photo,
                 credentials: 'include',
             }),
-            invalidatesTags: ['Photo']
+            invalidatesTags: ['Photo','CurrentUser']
         }),
         updatePhoto: builder.mutation({
             query: ({id,photo}) =>({
@@ -28,7 +28,7 @@ export const photoApiSlice = apiSlice.injectEndpoints({
                 method: 'DELETE',
                 credentials: 'include',
             }),
-            invalidatesTags:(result, error, arg) =>  [{type:'Photo',id:arg.id},'Photo']
+            invalidatesTags:(result, error, arg) =>  [{type:'Photo',id:arg.id},'Photo','CurrentUser']
             
         }),
 

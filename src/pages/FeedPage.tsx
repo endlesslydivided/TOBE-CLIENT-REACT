@@ -37,12 +37,12 @@ const FeedPage = () =>
 
     return (
         <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
+            <Grid container spacing={3} sx={{justifyContent:"center"}}>
+                <Grid item xs={9}>
                     <PostForm isDropActive={isDropActive}/>  
                 </Grid>
                 
-                <Grid item xs={12}>
+                <Grid item xs={9}>
                     <PostsList filters={filters}/>  
                 </Grid>
                 

@@ -28,7 +28,7 @@ const DragZone= ({children,extensions,maxFiles,isDropActive,isMultiple,setFile,i
     if(isDropActive)
     {
       return (
-        <Box {...getRootProps()} sx={{height:"50vh",width:"100%",alignItems:"center",display:"flex",flexDirection:"column-reverse", justifyContent:"center",color:"red"}}>
+        <Box {...getRootProps()} sx={{height:"50vh",width:"100%",alignItems:"center",display:"flex",flexDirection:"column-reverse", justifyContent:"center"}}>
               <input {...getInputProps()} />
               <Typography>{innerText}</Typography>
               <Add/>

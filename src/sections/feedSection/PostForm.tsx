@@ -1,15 +1,14 @@
 //@ts-nocheck
 import { styled } from  '@mui/material/styles';
-import { Card, CardContent, CardHeader, Divider, FormControlLabel, FormGroup, List, ListItemText, Switch, Tab, Tabs, TextField } from '@mui/material';
+import { Avatar, Card, IconButton, ImageList, ImageListItem, ImageListItemBar, List, ListItem, ListItemAvatar, ListItemText, TextField } from '@mui/material';
 import { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { Add, DateRange, Language, LocationCity, Wc } from '@mui/icons-material';
+import { Add, CheckBox, Close, DateRange, FileCopy, InsertDriveFile, Language, LocationCity, Send, TextFormat, TextSnippet, TitleOutlined, Wc } from '@mui/icons-material';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import Image from 'mui-image';
-import { DateTimePicker } from '@mui/lab';
+import { DateTimePicker, LoadingButton } from '@mui/lab';
 import AvatarList from '../../components/avatarList';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { useGetPagedAvoidedRequestsByUserQuery, useGetPagedFeedByUserQuery, useGetPagedFriendsByUserQuery, useGetPagedFriendsRequestsByUserQuery, useGetPagedPostsByUserQuery, useGetPagedUsersQuery } from '../../services/UsersApiSlice';
 import FullScreenLoader from '../../components/FullScreenLoader';
 import { FriendsListItem, RequestListItem, UsersListItem } from '../../components/avatarList/AvatarList';
 import { useAppSelector } from '../../hooks/redux';
@@ -18,10 +17,17 @@ import SearchIcon from '@mui/icons-material/Search';
 import { object, ObjectPair, string, TypeOf } from 'zod';
 import NewsList, { FeedListItem } from '../../components/newsList/NewsList';
 import { useCreatePostMutation } from '../../services/PostsService';
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FileButton from '../../components/fileButton/FileButton';
 import DragZone from '../../components/dragZone';
+import { Stack } from '@mui/system';
+import nextId from 'react-id-generator';
+import AudioPlayer from 'material-ui-audio-player';
+import FormInput from '../../components/FormInput';
+import PostFormImages from '../../components/postParts/imageList/PostFormImages';
+import PostFormDocs from '../../components/postParts/docsList/PostFormDocs';
+import PostFormAudios from '../../components/postParts/audioList/PostFormAudios';
 
 interface IPostForm
 {
@@ -29,55 +35,75 @@ interface IPostForm
 }
 
 const postSchema =object({
-    title: string().min(0).max(100,'Длина заголовка - не более 100 символов'),
-    content: string().min(0).max(1000,'Длина текста - не более 10000 символов'),
-    description: string().min(0).max(255,'Длина описание - не более 255 символов')
+    title: string().max(100,'Длина заголовка - не более 100 символов').optional().default(''),
+    content: string({required_error:"Введите текст содержимого поста"}).max(1000,'Длина текста поста - не более 10000 символов'),
+    description: string().max(255,'Длина описание - не более 255 символов').optional().default('')
 });
 
 export type PostInput = TypeOf<typeof postSchema>;
 
-const PostForm:FC<IPostForm>= ({isDropActive,...other}) => {
-  
-    const userState :any = useAppSelector(state => state.auth.user);
+const PostForm:FC<IPostForm>= ({isDropActive,...other}) => 
+{
+  const userState :any = useAppSelector(state => state.auth.user);
 
-    const methods = useForm<PostInput>({resolver: zodResolver(postSchema),});
-    const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
-    const [files,setFiles] = useState();
+  const methods = useForm({resolver: zodResolver(postSchema),});
+  const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
+  const [files,setFiles] = useState([]);
 
-    const TFRef = useRef(null);
+  const TDRef = useRef(null);
 
-    const [createPost,{ isLoading, isSuccess, error, isError }]  = useCreatePostMutation();
+  const [createPost,{ isLoading, isSuccess, error, isError }]  = useCreatePostMutation();
 
-    useEffect(() => 
-    {
-        if (isSuccess) 
+  useEffect(() => 
+  {
+      if (isSuccess) 
+      {
+        toast.success('Пост создан успешно');
+      }
+
+      if (isError) 
+      {
+        if (Array.isArray((error as any).data.error)) 
         {
-          toast.success('Пост создан успешно');
-        }
-
-        if (isError) 
+          (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+        } 
+        else 
         {
-          if (Array.isArray((error as any).data.error)) 
-          {
-            (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
-          } 
-          else 
-          {
-            toast.error((error as any).data.message, {position: 'top-right',});
-          }
+          toast.error((error as any).data.message, {position: 'top-right',});
         }
-    }, [isLoading]);
+      }
+  }, [isLoading]);
 
-    useEffect(() =>{{isSubmitSuccessful && isSuccess &&  reset()}}, [isSubmitSuccessful,isSuccess]);
-    const onSubmitHandler: SubmitHandler<PostInput> = (values) => 
-    {     
-        createPost(values);
-    };
-
-
-    const addAttachments = async (attachments:File[]| File) =>
+  useEffect(() =>{
+  {
+    if(isSubmitSuccessful && isSuccess)
     {
-      if(files.length + attachments.length > 10)
+      reset();
+      setFiles([]);
+    }
+  }}, [isSubmitSuccessful,isSuccess]);
+
+  const onSubmitHandler: SubmitHandler<PostInput> = async (values) => 
+  {     
+      const formData = new FormData();
+      files.forEach((file) =>
+      {
+        formData.append('files[]', file.data,file.name);
+      })
+
+      formData.append('title', values.content);
+      formData.append('description', values.description);
+      formData.append('content', values.content);
+      formData.append('userId', userState.id);
+         
+      await createPost(formData);
+  };
+
+
+  const addAttachments = async (attachments:File[]| File) =>
+    {
+      
+      if((Array.isArray(attachments) && files.length + attachments.length > 10) || (files.length + 1> 10))
       {
         toast.error("Максимальное количество прикреплений - 10 файлов", {position: 'top-right',}); 
         return; 
@@ -97,7 +123,7 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) => {
             fr.onload = async () => 
             {
               let blob = new Blob([fr.result],{type:file.type});
-              setFiles([...files,{data:blob,name:file.name}]);
+              setFiles([...files,{id: nextId(),data:blob,name:file.name}]);
             }  
           }
         )
@@ -109,7 +135,7 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) => {
         fr.onload = async () => 
         {
             let blob = new Blob([fr.result],{type:attachments.type});
-            setFiles([...files,{data:blob,name:attachments.name}]);
+            setFiles([...files,{id: nextId(),data:blob,name:attachments.name}]);
         }  
       }
        
@@ -118,39 +144,70 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) => {
   return (
     <Card {...other} sx={{ p: 2}}>
       <FormProvider {...methods}>
-        <CardContent component='form' sx={{ p: 1}}  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' width='100%'>
-          <Grid container sx={{display:"flex",justifyContent:"center"}} spacing={1} >
-					{
-						isDropActive?
-            <DragZone isDropActive={isDropActive} setFiles={addAttachments}>
-							<Add/>
-						</DragZone>
-            :
-						<>
-                <Grid item xs={6} row>
-                  <TextField id="title-field" name='title' size="small"  sx={{width:"100%"}}  label="Заголовок"/>
+        <Box component='form' sx={{ p: 1}}  onSubmit={handleSubmit(onSubmitHandler)} autoComplete='off' width='100%'>
+          <Grid container spacing={1}>
+            <Grid container item sx={{display:"flex",justifyContent:"center"}} xs={12} md={11} spacing={1} >
+            {
+              isDropActive?
+              <DragZone isDropActive={isDropActive} setFile={addAttachments}>
+                <Add/>
+              </DragZone>
+              :
+              <>
+                <Grid item xs={12} >
+                  <FormInput size="small" type="text" name="content"	label="Расскажите что-нибудь..."	multiline	 maxRows={10}/>
+               
                 </Grid>
+                <Grid item xs={12}   >
+                  <Stack  direction="row"  justifyContent="left"  alignItems="center"  spacing={2}>
+                    <FileButton sx={{color:"info.main"}} setFile={addAttachments}>
+                      <TextSnippet/>
+                    </FileButton>
+                    <>
+                      <Button  sx={{color:"info.main"}}  onClick={() => TDRef.current.hidden = !TDRef.current.hidden}>
+                        <TitleOutlined/>
+                      </Button>                   
+                      <Card sx={{ p: 1, }} ref={TDRef} hidden={true}>
+                          <Grid container sx={{display:"flex",justifyContent:"center"}} spacing={1} >
 
-                <Grid item xs={6} row>
-                  <TextField id="title-field" name='description' size="small"  sx={{width:"100%"}}  label="Описание"/>
+                            <Grid item xs={12} >
+                              <FormInput size="small" type="text" name="title"   sx={{width:"100%"}}  label="Заголовок"/>
+                            </Grid>
+
+                            <Grid item xs={12} >
+                              <FormInput size="small" type="text" name="description"   sx={{width:"100%"}}  label="Описание"/>
+                            </Grid>
+                          </Grid>
+                        </Card>               
+                    </>
+                  </Stack>
                 </Grid>
-
-                <Grid item xs={12} row>
-                  <TextField id="content-field" name='content' size="small"  sx={{width:"100%"}} 	label="Контент"	multiline	ref={TFRef} maxRows={10}/>
-                </Grid>
-
-
-                <Grid item xs={12} row>
-                  <FileButton sx={{color:"red"}} setFile={addAttachments}>
-                    <Add/>
-                    <Typography variant="body2" color="text.secondary" sx={{py:1}}>Прикрепление</Typography>
-                  </FileButton>
-                </Grid>
-						</>
-					}
+              </>
+            }
+            {
+            files.length !== 0 && 
+            <>
+              <Grid item xs={12} >
+                <PostFormImages setFiles={setFiles} files={files}/>
+              </Grid>
+              <Grid item xs={12} >
+               <PostFormDocs setFiles={setFiles} files={files}/>
+              </Grid>
+              <Grid item xs={12} >
+               <PostFormAudios setFiles={setFiles} files={files}/>
+              </Grid>
+            </>
+            }
+            </Grid>         
+            <Grid item xs={12}  md={1}>
+              <LoadingButton variant='contained' fullWidth disableElevation   type='submit' loading={isLoading}  >
+                <Send sx={{color:"white"}}/>
+              </LoadingButton>
+            </Grid>
           </Grid>
-				</CardContent>
-			</FormProvider>
+
+				</Box>
+      </FormProvider>
     </Card>
   );
 }

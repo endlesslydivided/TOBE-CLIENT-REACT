@@ -38,10 +38,10 @@ const NavSection: FC<INavSectionProps> = ({ data = [],user, ...other }) =>{
 
 const  NavItem:FC<INavItemProps> = ({ item,mainPath }) => 
 {
-  const { route, Icon, text,key }:any = item;
+  const { route, Icon, text}:any = item;
 
   return (
-    <StyledNavItem disabled={item?.disabled}  key={key} component={RouterLink} to={mainPath + (route)}  
+    <StyledNavItem disabled={item?.disabled}   component={RouterLink} to={mainPath + (route)}  
     sx={{'&.active': {
           color: 'text.primary',
           bgcolor: 'action.selected',
@@ -49,9 +49,9 @@ const  NavItem:FC<INavItemProps> = ({ item,mainPath }) =>
         },
       }}
     >
-      <StyledNavItemIcon>{Icon && <Icon/>}</StyledNavItemIcon>
+      <StyledNavItemIcon >{Icon && <Icon/>}</StyledNavItemIcon>
 
-      <ListItemText disableTypography primary={text} />
+      <ListItemText   disableTypography primary={text} />
       {
         item?.disabled && <LockOutlined sx={{m:1}}/>
       }

@@ -43,8 +43,9 @@ const FormInput: FC<IFormInputProps> = ({ children,name, label,type, ...otherPro
                   InputProps={{...otherProps,
                     endAdornment:                    
                         ( 
+                        !!errors[name] && 
                         <InputAdornment position='end'>
-                            {!!errors[name] && <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>}
+                            <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>
                             <IconButton onClick={handleClickShowPassword} color='default'>
                                 {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
@@ -65,8 +66,9 @@ const FormInput: FC<IFormInputProps> = ({ children,name, label,type, ...otherPro
                         variant="outlined"
                         fullWidth
                         label={label}
+                        {...otherProps}
                         error={!!errors[name]}
-                        InputProps={{...otherProps,
+                        InputProps={{
                         endAdornment:                    
                             ( 
                             <InputAdornment position='end'>
@@ -86,15 +88,17 @@ const FormInput: FC<IFormInputProps> = ({ children,name, label,type, ...otherPro
                     <TextField
                         {...field}
                         type={type}
+                        {...otherProps}
                         variant="outlined"
                         fullWidth
                         label={label}
                         error={!!errors[name]}
-                        InputProps={{...otherProps,
+                        InputProps={{
                         endAdornment:                    
                             ( 
+                                !!errors[name] &&
                             <InputAdornment position='end'>
-                                {!!errors[name] && <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>}
+                             <PopperIcon text={errors[name] ? errors[name]?.message?.toString() : ''} icon={<QuestionMark color='error'/>}/>
 
                             </InputAdornment>)
                         }}
@@ -114,7 +118,7 @@ const FormInput: FC<IFormInputProps> = ({ children,name, label,type, ...otherPro
         {
             ({ field }) => 
             (
-            <FormControl fullWidth sx={{ p: 0.5 }}>
+            <FormControl fullWidth >
                 {renderContent(field)}
             </FormControl>
             )

@@ -114,22 +114,22 @@ export function RegisterForm() {
         <FormProvider {...methods}>
           <Box component='form'  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' maxWidth='27rem'  width='100%'>
 
-            <Grid container>
+            <Grid container spacing={0.5} sx={{mb:0.5}}>
 
               <Grid item xs={6} md={6}>
-                <FormInput name='firstName' label='Имя' type='text'margin='none'  />
+                <FormInput name='firstName' label='Имя' type='text'   />
               </Grid>
 
-              <Grid item xs={6} md={6}>
-                <FormInput name='lastName' label='Фамилия' type='text'   />
+              <Grid item xs={6} md={6} >
+                <FormInput name='lastName' label='Фамилия' type='text'  />
               </Grid>
 
             </Grid>
 
-            <Grid container>
+            <Grid container spacing={0.5} sx={{mb:0.5}}>
 
               <Grid item xs={6} md={6}>
-                <FormInput name='country' label='Страна' type='text' margin='none'  />
+                <FormInput name='country' label='Страна' type='text' margin='none'    />
               </Grid>
 
               <Grid item xs={6} md={6}>
@@ -138,16 +138,16 @@ export function RegisterForm() {
 
             </Grid>
           
-            <FormInput name='email' label='Email' type='email'/>
-            <FormInput name='phoneNumber' label='Номер телефона' type='text' startAdornment={
+            <FormInput name='email' label='Email' type='email' sx={{mb:0.5}}  />
+            <FormInput name='phoneNumber' label='Номер телефона' sx={{mb:0.5}}   type='text' startAdornment={
                <InputAdornment position='start'>
                 <Add/>
               </InputAdornment>
               }/>
 
-            <FormInput name='password' label='Пароль' type='password'   />
-            <FormInput name='passwordConfirm' label='Подтвердить пароль'  type='password'/>
-            <FormInput name='sex' type='radio' label="Пол">
+            <FormInput name='password' label='Пароль' type='password'   sx={{mb:0.5}} />
+            <FormInput name='passwordConfirm' label='Подтвердить пароль' sx={{mb:0.5}} type='password'  />
+            <FormInput name='sex' type='radio' label="Пол" sx={{mb:0.5}}>
               <FormControlLabel value="Мужской" control={<Radio />} label="Мужской" />
               <FormControlLabel value="Женский" control={<Radio />} label="Женский" />
             </FormInput>

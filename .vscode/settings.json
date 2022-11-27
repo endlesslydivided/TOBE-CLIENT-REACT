@@ -9,5 +9,8 @@
     },
     "workbench.preferredDarkColorTheme": "Kimbie Dark",
     "workbench.preferredHighContrastColorTheme": "Default Dark+",
-    "workbench.colorTheme": "Monokai"
+    "workbench.colorTheme": "Monokai",
+    "workbench.iconTheme": "vs-seti",
+    "typescript.inlayHints.enumMemberValues.enabled": true,
+    "typescript.inlayHints.parameterTypes.enabled": false
 }

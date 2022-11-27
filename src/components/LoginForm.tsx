@@ -107,9 +107,9 @@ export function LoginForm() {
             <FormProvider {...methods}>
               <Box component='form'  onSubmit={handleSubmit(onSubmitHandler)}  noValidate  autoComplete='off' maxWidth='27rem'  width='100%'>
               
-                <FormInput name='email' label='Email' type='email'/>
+                <FormInput name='email' label='Email' type='email' sx={{mb:1}}/>
 
-                <FormInput name='password' label='Пароль' type='password'   />
+                <FormInput name='password' label='Пароль' type='password' />
 
                 <LoadingButton variant='contained' sx={{ mt: 1 ,bgColor:"black"}} fullWidth disableElevation type='submit' loading={isLoading}>
                   Войти

@@ -36,13 +36,17 @@ const FeedPage = () =>
 
 
     return (
-        <Container maxWidth="xl" onDragOver={(e) => setIsDropActive(true)}  onDragLeave={(e)=> setIsDropActive(false)}>
-            <Grid container spacing={3} sx={{justifyContent:"center"}}>
-                <Grid item xs={9}>
+        <Container maxWidth="xl" 
+        
+        onDragOver={(e) => setIsDropActive(true)}
+        onDragLeave={(e)=> setIsDropActive(false)}
+        onDrop={(e)=> setIsDropActive(false)}>
+            <Grid  container spacing={3} sx={{justifyContent:"center"}}>
+                <Grid  xs={9}>
                     <PostForm isDropActive={isDropActive}/>  
                 </Grid>
                 
-                <Grid item xs={9}>
+                <Grid  xs={9} sx={{py:0}}>
                     <PostsList filters={filters}/>  
                 </Grid>
                 

@@ -1,3 +1,4 @@
+import { setFeedCollection } from "../store/reducers/PostSlice";
 import { apiSlice } from "./ApiSlice";
 
 
@@ -87,7 +88,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
             providesTags: (result, error, arg) =>
             result
               ? [...result.rows.map(({ id }:any ) => ({ type: 'Feed' as const, id })),'Feed']
-              : ['Feed'],
+              : ['Feed']
         }),
         getUser: builder.query({
             query: ({id}) => ({

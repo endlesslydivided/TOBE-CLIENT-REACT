@@ -145,8 +145,8 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) =>
     <Card {...other} sx={{ p: 2}}>
       <FormProvider {...methods}>
         <Box component='form' sx={{ p: 1}}  onSubmit={handleSubmit(onSubmitHandler)} autoComplete='off' width='100%'>
-          <Grid container spacing={1}>
-            <Grid container item sx={{display:"flex",justifyContent:"center"}} xs={12} md={11} spacing={1} >
+          <Grid container spacing={1} rowSpacing={0}>
+            <Grid container item sx={{display:"flex",justifyContent:"center"}} xs={12} md={10} spacing={1} >
             {
               isDropActive?
               <DragZone isDropActive={isDropActive} setFile={addAttachments}>
@@ -199,8 +199,8 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) =>
             </>
             }
             </Grid>         
-            <Grid item xs={12}  md={1}>
-              <LoadingButton variant='contained' fullWidth disableElevation   type='submit' loading={isLoading}  >
+            <Grid item xs={12}  md={2}>
+              <LoadingButton variant='contained' sx={{widht:"100%",height:"100%"}} fullWidth disableElevation   type='submit' loading={isLoading}  >
                 <Send sx={{color:"white"}}/>
               </LoadingButton>
             </Grid>

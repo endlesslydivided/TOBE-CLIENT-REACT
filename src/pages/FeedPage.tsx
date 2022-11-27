@@ -15,10 +15,7 @@ import PostsList from '../sections/feedSection/PostsList';
 import PostForm from '../sections/feedSection/PostForm';
 
 const initialFilters= {
-    sex: '',
     search: '',
-    country: '',
-    city:'',
     page: 1,
     limit: 10,
     orderBy:'createdAt',
@@ -42,11 +39,11 @@ const FeedPage = () =>
         onDragLeave={(e)=> setIsDropActive(false)}
         onDrop={(e)=> setIsDropActive(false)}>
             <Grid  container spacing={3} sx={{justifyContent:"center"}}>
-                <Grid  xs={9}>
+                <Grid  xs={7}>
                     <PostForm isDropActive={isDropActive}/>  
                 </Grid>
                 
-                <Grid  xs={9} sx={{py:0}}>
+                <Grid  xs={7} sx={{py:0}}>
                     <PostsList filters={filters}/>  
                 </Grid>
                 

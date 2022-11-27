@@ -27,25 +27,6 @@ interface INewsListItemProps
     userState: any;
 }
 
-const checkStatus = (status,successMessage) => 
-    {
-        if (status.isSuccess) 
-        {
-          toast.success(successMessage);
-        }
-  
-        if (status.isError) 
-        {
-          if (Array.isArray((status.error as any).data.error)) 
-          {
-            (status.error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
-          } 
-          else 
-          {
-            toast.error((status.error as any).data.message, {position: 'top-right',});
-          }
-        }
-};
 
 
 const NewsList:FC<INewsListProps>= ({newsList,listItem:ListItem,...other}) => {
@@ -73,17 +54,17 @@ export const  FeedListItem:FC<INewsListItemProps> = ({post,userState,...other}) 
     <ListItem {...other} sx={{px:0}}  key={post.id}>
         <Card sx={{width:"100%"}}>
             <CardContent>
-                <Grid container alignItems="center" sx={{padding: 0,'& .MuiGrid-item': { padding:0},}}   justifyContent="center"spacing={5} >
-                    <Grid item xs={1}>
+                <Grid container alignItems="center" sx={{p:2}} rowSpacing={0.1}  justifyContent="center"spacing={5} >
+                    <Grid item xs={3} sm={2} md={1} >
                         <Link to={`/user/users/${post?.user?.id}`}>
-                            <ListItemAvatar   sx={{m:2}}>
-                                <Avatar  sx={{ width: 50, height: 50 }} alt={`${post.user.firstName} ${post.user.lastName}`} 
+                            <ListItemAvatar   sx={{m:2,p:0}}>
+                                <Avatar  sx={{ width: "100%", height: "100%" }} alt={`${post.user.firstName} ${post.user.lastName}`} 
                                 src={post?.user?.photo?.path && process.env.REACT_APP_API_URL + post?.user.photo?.path}  />
                             </ListItemAvatar>
                         </Link>
                     </Grid>
-                    <Grid item xs={11} > 
-                        <ListItemText
+                    <Grid item xs={9} sm={10} md={11}> 
+                        <ListItemText sx={{mx:4}}
                         secondaryTypographyProps={{mt:0.5}}
                         primary={`${post.user.firstName} ${post.user.lastName}`}
                         secondary={
@@ -94,13 +75,12 @@ export const  FeedListItem:FC<INewsListItemProps> = ({post,userState,...other}) 
                         />
 
                     </Grid>
-                    <Grid item xs={12} > 
+                    <Grid item xs={12}  > 
                         <ListItemText
-                        secondaryTypographyProps={{mt:0.5}}
+                        sx={{mx:2}}
                         primary={`${post.content}`}
                         
                         />
-
                     </Grid>
                 </Grid>
             </CardContent>

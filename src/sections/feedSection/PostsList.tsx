@@ -24,6 +24,7 @@ interface IPostsListProps
 }
 
 
+
 const PostsList:FC<IPostsListProps>= ({filters,...other}) => {
   
     const [limit,setLimit] = useState(10);
@@ -32,6 +33,8 @@ const PostsList:FC<IPostsListProps>= ({filters,...other}) => {
     const userState :any = useAppSelector(state => state.auth.user);
 
     const { data:feed, error:errorFeed, isLoading:isLoadingFeed}  = useGetPagedFeedByUserQuery({id:userState.id,filters},{refetchOnMountOrArgChange:true});
+
+    //const feed :any = useAppSelector(state => state?.post?.feed);
 
     const checkQuery = (error:any) => 
       {
@@ -57,10 +60,16 @@ const PostsList:FC<IPostsListProps>= ({filters,...other}) => {
                       </Box> )
 
 
-    return(    
-        isLoadingFeed ? <FullScreenLoader/> :
-        feed?.rows && feed?.count !== 0  ? <NewsList listItem={FeedListItem} newsList={feed?.rows}/> : 
-        notFound     
+    return(   
+      <> 
+        {
+        feed?.rows && feed?.count !== 0  ? 
+        <NewsList listItem={FeedListItem} newsList={feed?.rows}/> : 
+        notFound
+        } 
+        {isLoadingFeed && <FullScreenLoader/> }
+        
+      </>   
     );
 }
 

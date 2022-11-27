@@ -6,6 +6,7 @@ import friendReducer from "./reducers/FriendSlice";
 import albumReducer from "./reducers/AlbumSlice";
 import photoReducer from "./reducers/PhotoSlice";
 import fileReducer from "./reducers/FileSlice";
+import postReducer from "./reducers/PostSlice";
 
 
 
@@ -16,6 +17,7 @@ export const store = configureStore({
         user: userReducer,
         friend: friendReducer,
         album: albumReducer,
+        post: postReducer,
         photo: photoReducer,
         file: fileReducer
     },

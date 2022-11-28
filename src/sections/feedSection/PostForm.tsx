@@ -36,7 +36,9 @@ interface IPostForm
 
 const postSchema =object({
     title: string().max(100,'Длина заголовка - не более 100 символов').optional().default(''),
-    content: string({required_error:"Введите текст содержимого поста"}).max(1000,'Длина текста поста - не более 10000 символов'),
+    content: string({required_error:"Введите текст содержимого поста"})
+    .min(1,'Необходимо добавить текст')
+    .max(1000,'Длина текста поста - не более 10000 символов'),
     description: string().max(255,'Длина описание - не более 255 символов').optional().default('')
 });
 

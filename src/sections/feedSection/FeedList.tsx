@@ -19,8 +19,9 @@ import { ObjectPair } from 'zod';
 import NewsList, { FeedListItem } from '../../components/newsList/NewsList';
 import { useObserver } from '../../hooks/useObserver';
 import LineLoader from '../../components/LineLoader';
+import ScrollTop from '../../components/ui/ScrollToTop';
 
-interface IPostsListProps
+interface IFeedListProps
 {
     filters: object;
     setFilters: Function
@@ -28,7 +29,7 @@ interface IPostsListProps
 
 
 
-const PostsList:FC<IPostsListProps>= ({filters,setFilters,...other}) => {
+const FeedList:FC<IFeedListProps>= ({filters,setFilters,...other}) => {
   
     const [feed,setFeed] = useState({rows:[],count:0});
     const [totalPages, setTotalPages] = useState(0);
@@ -109,4 +110,4 @@ const PostsList:FC<IPostsListProps>= ({filters,setFilters,...other}) => {
 
 
 
-export default PostsList;
+export default FeedList;

@@ -30,11 +30,11 @@ const UserMainPhoto:FC<IUserMainPhotoProps> = ({userState,...other}) =>
 {
   
   return (
-    <Card {...other}>
+    <Card {...other} sx={{height:"100%"}}>
       {
         userState?.photo ?
         <Image src={process.env.REACT_APP_API_URL + userState?.photo.path} 
-        bgColor="whitesmoke" fit="cover"
+        bgColor="whitesmoke" fit="cover" 
         />
         :
         <Box sx={{height:"50vh",width:"100%",alignItems:"center",display:"flex",flexDirection:"column-reverse", justifyContent:"center",

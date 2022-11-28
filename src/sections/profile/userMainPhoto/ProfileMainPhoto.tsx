@@ -96,7 +96,7 @@ const ProfileMainPhoto:FC<IProfileMainPhotoProps> = ({userState,isDropActive,...
   
 
   return (
-    <Card {...other}>
+    <Card sx={{height:"200px"}} {...other}>
       {
         userState?.photo ?
         <Image src={process.env.REACT_APP_API_URL + userState?.photo.path} 

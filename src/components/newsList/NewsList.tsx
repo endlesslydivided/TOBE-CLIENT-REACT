@@ -13,6 +13,10 @@ import { useAppSelector } from '../../hooks/redux';
 import { useCreateFriendMutation, useDeleteFriendMutation, useUpdateFriendMutation } from '../../services/FriendsApiSlice';
 import { toast } from 'react-toastify';
 import {fDateTime} from '../../utils/formatTime'
+import PostListImages from '../postParts/imageList/PostListImages copy';
+import { getAudios, getImages, getVideos } from '../../utils/fileTypesFilter';
+import PostListAudios from '../postParts/audioList/PostListAudios';
+import PostListDocs from '../postParts/docsList/PostListDocs';
 
 interface INewsListProps
 {
@@ -34,7 +38,7 @@ const NewsList:FC<INewsListProps>= ({newsList,listItem:ListItem,...other}) => {
   const userState :any = useAppSelector(state => state.auth.user);
 
   return (
-    <List >
+    <List sx={{p:0}}>
         {
             newsList.map((post:any,index:number) =>
                 <>
@@ -48,46 +52,60 @@ const NewsList:FC<INewsListProps>= ({newsList,listItem:ListItem,...other}) => {
 
 export const  FeedListItem:FC<INewsListItemProps> = ({post,userState,...other}) => 
 {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  return (
-    <ListItem {...other} sx={{px:0}}  key={post.id}>
-        <Card sx={{width:"100%"}}>
-            <CardContent>
-                <Grid container alignItems="center" sx={{p:2}} rowSpacing={0.1}  justifyContent="center"spacing={5} >
-                    <Grid item xs={3} sm={2} md={1} >
-                        <Link to={`/user/users/${post?.user?.id}`}>
-                            <ListItemAvatar   sx={{m:2,p:0}}>
-                                <Avatar  sx={{ width: "100%", height: "100%" }} alt={`${post.user.firstName} ${post.user.lastName}`} 
-                                src={post?.user?.photo?.path && process.env.REACT_APP_API_URL + post?.user.photo?.path}  />
-                            </ListItemAvatar>
-                        </Link>
-                    </Grid>
-                    <Grid item xs={9} sm={10} md={11}> 
-                        <ListItemText sx={{mx:4}}
-                        secondaryTypographyProps={{mt:0.5}}
-                        primary={`${post.user.firstName} ${post.user.lastName}`}
-                        secondary={
-                            <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.secondary">
-                                {fDateTime(post.createdAt)}
-                            </Typography>         
-                        }
-                        />
+    const imagesVideos = [...getImages(post.attachments),...getVideos(post.attachments)]
+    const audios = [...getAudios(post.attachments)];
+    const docs = post.attachments.filter((x)=> ![...imagesVideos,...audios].some(y => y.path === x.path));
 
-                    </Grid>
-                    <Grid item xs={12}  > 
-                        <ListItemText
-                        sx={{mx:2}}
-                        primary={`${post.content}`}
+    return (
+        <ListItem {...other} sx={{px:0}}  key={post.id}>
+            <Card sx={{width:"100%"}}>
+                <CardContent>
+                    <Grid container alignItems="center" sx={{p:2}} rowSpacing={0.1}  justifyContent="space-between"spacing={7} >
+                        <Grid  item xs={12} sm={12} md={11} >      
+                            <Link style={{textDecoration: 'none'}}  to={`/user/users/${post?.user?.id}`}>
+                                <Stack direction="row" sx={{mx:2,mb:1}} spacing={2} >
+                                    <ListItemAvatar>
+                                        <Avatar  sx={{ width: "50px" , height: "50px" }} alt={`${post.user.firstName} ${post.user.lastName}`} 
+                                        src={post?.user?.photo?.path && process.env.REACT_APP_API_URL + post?.user.photo?.path}  />
+                                    </ListItemAvatar>
+                                    <ListItemText 
+                                    sx={{py:0.2}}
+                                    secondaryTypographyProps={{mt:0.5}}
+                                    primary={`${post.user.firstName} ${post.user.lastName}`}
+                                    secondary={
+                                        <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.secondary">
+                                            {fDateTime(post.createdAt)}
+                                        </Typography>         
+                                    }
+                                    />
+                                </Stack>
+                            </Link>
+                        </Grid>
+                        <Grid item xs={12}  > 
+                            <ListItemText
+                            sx={{mx:2,mt:0,mb:2}}
+                            primary={`${post.content}`}
+                            
+                            />
+                        </Grid>
+                        {imagesVideos.length !== 0 && <Grid item xs={12}  > 
+                            <PostListImages sx={{mx:2}} attachments={imagesVideos}/>
+                        </Grid>}
+                        {docs.length !== 0 && <Grid item xs={12}  > 
+                            <PostListDocs sx={{mx:2}} attachments={docs}/>
+                        </Grid>}
+                        {audios.length !== 0 && <Grid item xs={12}  > 
+                            <PostListAudios sx={{pt:0}} attachments={audios}/>
+                        </Grid>}
                         
-                        />
                     </Grid>
-                </Grid>
-            </CardContent>
-        </Card>
-     
-    </ListItem>
-  );
+                </CardContent>
+            </Card>
+        
+        </ListItem>
+    );
 }
 
 export default NewsList;

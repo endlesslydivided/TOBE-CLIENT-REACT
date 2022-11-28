@@ -11,16 +11,18 @@ interface IPostListImagesProps
     attachments: any[]
 }
 
-const PostListImages: FC<IPostListImagesProps> = ({attachments}) => {
+const PostListImages: FC<IPostListImagesProps> = ({attachments,...other}) => {
   return (
-    <ImageList cols={2}>
+    <ImageList  {...other} cols={3}>
     {
       attachments.map((item)=>
       {
         return (
+          <a href={process.env.REACT_APP_API_URL + item?.path} style={{textDecoration:'none',color:"black"}}>
+
           <ImageListItem key={item.id}>
               {
-                item.data.type === 'video/mp4'
+                item.path.endsWith('mp4')
                 ?
                 <video width="100%" height="100%" controls>
                   <source  src={process.env.REACT_APP_API_URL + item?.path}/>
@@ -29,6 +31,7 @@ const PostListImages: FC<IPostListImagesProps> = ({attachments}) => {
                 <Image src={process.env.REACT_APP_API_URL + item?.path} alt={item.id} />
               }
           </ImageListItem>
+          </a>
         )
       })
     }

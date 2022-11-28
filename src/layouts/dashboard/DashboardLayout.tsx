@@ -39,7 +39,7 @@ export default function DashboardLayout() {
 
   return (
     <StyledRoot>
-      <Header onOpenNav={() => setOpen(true)} />
+      <Header  onOpenNav={() => setOpen(true)} />
 
       <Nav openNav={open} onCloseNav={() => setOpen(false)} />
 

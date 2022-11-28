@@ -1,6 +1,7 @@
 //@ts-nocheck
 
 import { alpha } from '@mui/material/styles';
+import { dark } from '@mui/material/styles/createPalette';
 
 // ----------------------------------------------------------------------
 

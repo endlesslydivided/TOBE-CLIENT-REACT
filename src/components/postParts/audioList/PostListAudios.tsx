@@ -11,14 +11,14 @@ interface IPostListAudiosProps
   attachments: any[]
 }
 
-const PostListAudios: FC<IPostListAudiosProps> = ({attachments}) => {
+const PostListAudios: FC<IPostListAudiosProps> = ({attachments,...other}) => {
   return (
-    <List sx={{p:0}}>
+    <List {...other} >
     {
     attachments.map((item)=>
     {
         return (
-        <ListItem>
+        <ListItem sx={{py:0}}>
             <audio controls src={process.env.REACT_APP_API_URL + item?.path}/>         
         </ListItem>
         )

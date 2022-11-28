@@ -80,10 +80,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
               : ['Dialog'],
         }),
         getPagedFeedByUser: builder.query({
-            query: ({id,limit = 10,page = 1}) => ({
+            query: ({id,filters}) => ({
                 url:`/users/${id}/feed`,
                 method:`GET`,
-                params:{limit,page}
+                params:filters
             }),
             providesTags: (result, error, arg) =>
             result

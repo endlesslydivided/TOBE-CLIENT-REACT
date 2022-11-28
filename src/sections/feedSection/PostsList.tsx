@@ -1,7 +1,7 @@
-
+//@ts-nocheck
 import { styled } from  '@mui/material/styles';
 import { Card, CardContent, CardHeader, Divider, FormControlLabel, FormGroup, List, ListItemText, Switch, Tab, Tabs } from '@mui/material';
-import { FC, ReactNode, useEffect, useState } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Add, DateRange, Language, LocationCity, Wc } from '@mui/icons-material';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import Image from 'mui-image';
@@ -17,24 +17,56 @@ import { Search, SearchIconWrapper, StyledInputBase } from '../../components/sea
 import SearchIcon from '@mui/icons-material/Search';
 import { ObjectPair } from 'zod';
 import NewsList, { FeedListItem } from '../../components/newsList/NewsList';
+import { useObserver } from '../../hooks/useObserver';
+import LineLoader from '../../components/LineLoader';
 
 interface IPostsListProps
 {
-    filters: object
+    filters: object;
+    setFilters: Function
 }
 
 
 
-const PostsList:FC<IPostsListProps>= ({filters,...other}) => {
+const PostsList:FC<IPostsListProps>= ({filters,setFilters,...other}) => {
   
-    const [limit,setLimit] = useState(10);
-    const [page,setPage] = useState(1);
+    const [feed,setFeed] = useState({rows:[],count:0});
+    const [totalPages, setTotalPages] = useState(0);
+
+    const lastElement = useRef()
 
     const userState :any = useAppSelector(state => state.auth.user);
 
-    const { data:feed, error:errorFeed, isLoading:isLoadingFeed}  = useGetPagedFeedByUserQuery({id:userState.id,filters},{refetchOnMountOrArgChange:true});
+    const { data, error:errorFeed,isSuccess:isSuccessFeed, isLoading:isLoadingFeed,isFetching:isFethingFeed}  = useGetPagedFeedByUserQuery({id:userState.id,filters:filters},{refetchOnMountOrArgChange:true,});
 
-    //const feed :any = useAppSelector(state => state?.post?.feed);
+    const lastPostRef = useCallback(post =>
+      {
+        if(isLoadingFeed) return;
+
+        if(lastElement.current) lastElement.current.disconnect();
+
+        lastElement.current = new IntersectionObserver(posts=>
+          {
+            if(posts[0].isIntersecting &&  filters.page <= totalPages)
+            {
+              setFilters({...filters, page: filters.page + 1} );
+            }
+          })
+
+        if (post) lastElement.current.observe(post);
+      },[isLoadingFeed,totalPages])
+
+
+
+    useEffect(() => 
+    {
+      if(isSuccessFeed && data)
+      {
+        setFeed({rows:[...feed.rows,...data.rows],count:data.count});
+        setTotalPages(Math.ceil(data.count /  filters.limit));
+      }
+      
+    },[isFethingFeed])
 
     const checkQuery = (error:any) => 
       {
@@ -63,11 +95,13 @@ const PostsList:FC<IPostsListProps>= ({filters,...other}) => {
     return(   
       <> 
         {
-        feed?.rows && feed?.count !== 0  ? 
-        <NewsList listItem={FeedListItem} newsList={feed?.rows}/> : 
-        notFound
+          feed?.rows && feed?.count !== 0  ? 
+          <><NewsList listItem={FeedListItem} newsList={feed?.rows}/>
+          </> : isFethingFeed ? <LineLoader/> : notFound        
         } 
-        {isLoadingFeed && <FullScreenLoader/> }
+        <div ref={lastPostRef} style={{height: 0}}/>
+        {feed?.rows && feed?.count !== 0 && isFethingFeed &&<LineLoader/> }
+        
         
       </>   
     );

@@ -44,7 +44,7 @@ const FeedPage = () =>
                 </Grid>
                 
                 <Grid  xs={7} sx={{py:0}}>
-                    <PostsList filters={filters}/>  
+                    <PostsList filters={filters} setFilters={setFilters}/>  
                 </Grid>
                 
             </Grid>

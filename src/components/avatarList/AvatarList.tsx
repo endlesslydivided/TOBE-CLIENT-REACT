@@ -11,6 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../hooks/redux';
 import { useCreateFriendMutation, useDeleteFriendMutation, useUpdateFriendMutation } from '../../services/FriendsApiSlice';
 import { toast } from 'react-toastify';
+import { useCreateDialogMutation } from '../../services/DialogsApiSlice';
 
 
 interface IAvatarListProps
@@ -70,14 +71,20 @@ export const  UsersListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
 {
   const navigate = useNavigate();
   const [createFriend,createFriendStatus] = useCreateFriendMutation();
+  const [createDialog,createDialogStatus] = useCreateDialogMutation();
   const [deleteFriend,deleteFriendStatus] = useDeleteFriendMutation();
 
   useEffect(() => checkStatus(createFriendStatus,`Друг добавлен`),[createFriendStatus.isLoading]);
+  useEffect(() => checkStatus(createDialogStatus,`Диалог создан`),[createDialogStatus.isLoading]);
   useEffect(() => checkStatus(deleteFriendStatus,`Друг удалён`),[deleteFriendStatus.isLoading]);
 
-  const writeMessageHandler= () =>
+  const writeMessageHandler=  async () =>
   {
-    navigate(`/chat/${member.id}`);
+    const {data} = await createDialog({name:`${member.firstName} ${member.lastName}`,isChat:false,creatorId:userState.id,usersId:[member.id]});
+    if(data)
+    {
+      navigate(`/user/chat/${data.id}`);
+    }
   }
 
   const findFriend=  (friendId) =>  userState?.friends?.find((x) => x.friendId === friendId);
@@ -153,11 +160,6 @@ export const  FriendsListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
   const navigate = useNavigate();
 
   const writeMessageHandler= () =>
-  {
-    navigate(`/chat/${member.user?.id}`);
-  }
-
-  const addFridendHandler= () =>
   {
     navigate(`/chat/${member.user?.id}`);
   }
@@ -267,6 +269,48 @@ export const  RequestListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
     </ListItem>
   );
 }
+
+export const  DialogListItem:FC<IAvatarListItemProps> = ({member,userState}) => 
+{
+
+  return (
+    <Link  style={{textDecoration: 'none'}}  to={`/user/chat/${member.id}`}>
+
+    <ListItem  key={member.id}>
+        <Grid container alignItems="center"   justifyContent="center" spacing={1}>
+          <Grid item xs> 
+     
+            <Stack direction="row" sx={{mx:2}} spacing={2} > 
+              <ListItemAvatar>
+                {
+                  member.isChat ?
+                  <Avatar  sx={{ width: "50px" , height: "50px" }} alt={`${member.name}`} 
+                  src={member?.users[0]?.photo?.path && process.env.REACT_APP_API_URL + member?.users[0]?.photo?.path}  /> :
+                  <Avatar  sx={{ width: "50px" , height: "50px" }} alt={`${member.users[0]?.firstName} ${member.users[0]?.lastName}`} 
+                  src={member?.users[0]?.photo?.path && process.env.REACT_APP_API_URL + member?.users[0]?.photo?.path}  />
+                }
+               
+              </ListItemAvatar>
+              
+              <ListItemText
+              sx={{py:0.2}}  
+                secondaryTypographyProps={{mt:0.5}}
+                primary={member.isChat ? `${member.name}` : `${member.users[0]?.firstName} ${member.users[0]?.lastName}`}
+                secondary={
+                    <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.secondary">
+                      {member.messages.length !== 0 ? member.messages[0].text : 'Нет сообщений'}
+                    </Typography>         
+                }
+              />         
+            </Stack> 
+          </Grid>
+        </Grid>
+    </ListItem>
+    </Link>
+
+  );
+}
+
 
 
 export default AvatarList;

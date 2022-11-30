@@ -58,6 +58,7 @@ export const apiSlice = createApi({
               'User',
               'CurrentUser',
               'Album',
+              'Dialog',
               'Photo',
               'Feed'],
     endpoints:(builder)=> ({

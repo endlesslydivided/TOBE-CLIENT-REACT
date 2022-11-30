@@ -17,6 +17,7 @@ import ChatPage from '../pages/ChatPage';
 import FeedPage from '../pages/FeedPage';
 import AlbumsPage from '../pages/AlbumsPage';
 import UserPage from '../pages/UserPage';
+import DialogPage from '../pages/DialogPage';
 
 
 const AppRouter = () => {
@@ -43,6 +44,7 @@ const AppRouter = () => {
           <Route index element={<ProfilePage/>}/>
           <Route path={"/user" +  PROFILE_ROUTE} element={<ProfilePage/>}/>
           <Route path={"/user" + CHAT_ROUTE} element={<ChatPage/>}/>
+          <Route path={`/user/${CHAT_ROUTE}/:id`} element={<DialogPage/>}/>
           <Route path={"/user" + USERS_ROUTE} element={<UsersPage/>}/>
           <Route path={`/user${USERS_ROUTE}/${user.id}`} element={<Navigate to={"/user" +  PROFILE_ROUTE} replace/>}/>
           <Route path={`/user${USERS_ROUTE}/:id`} element={<UserPage/>}/>

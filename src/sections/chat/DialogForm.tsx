@@ -61,6 +61,11 @@ const DialogForm:FC<IDialogForm>= ({isDropActive,toUserId,dialogId,...other}) =>
 
   const handleSendMessage = async () =>
   {
+    if(messageText.length > 1000)
+    {
+      toast.error('Длина сообщения должна быть не более 1000 символов', {position: 'top-right',});
+      return;
+    }
     const message = await createMessage(
         {
             toUserId,
@@ -89,7 +94,8 @@ const DialogForm:FC<IDialogForm>= ({isDropActive,toUserId,dialogId,...other}) =>
               :
               <>
                 <Grid item xs={12} >
-                  <TextField size="small" type="text" fullWidth name="content" value={messageText} onChange={(e) => setMessageText(e.target.value)} label="Написать сообщение"	multiline maxRows={10}/>         
+                  <TextField size="small" type="text" fullWidth name="content" value={messageText} 
+                  onChange={(e) => setMessageText(e.target.value)} label={`Написать сообщение (${messageText.length}/1000)`}	multiline maxRows={10}/>         
                 </Grid>         
               </>
             }

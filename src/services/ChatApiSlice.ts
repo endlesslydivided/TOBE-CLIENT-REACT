@@ -17,11 +17,11 @@ enum ChatServerEvent
 }
 
 let socket: Socket;
-const  getSocket = () =>
+const  getSocket = (auth) =>
 {
     if (!socket) 
     {
-        socket = io(process.env.REACT_APP_API_URL_WS ,{path: '/chat', withCredentials: true});
+        socket = io(process.env.REACT_APP_API_URL_WS ,{path: '/chat', withCredentials: true,auth});
     }
     return socket;
 }
@@ -31,12 +31,12 @@ export const chatApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         
         sendMessage: builder.mutation<any, any>({
-            queryFn: (chatMessageContent: any) => 
+            queryFn: (body: any) => 
             {
-                const socket = getSocket();
+                const socket = getSocket(body.auth);
                 return new Promise(resolve => 
                 {
-                    socket.emit(ChatServerEvent.SendMessage, chatMessageContent, (message: any) => {
+                    socket.emit(ChatServerEvent.SendMessage, body, (message: any) => {
                     resolve({ data: message });
                 });
             })
@@ -51,12 +51,12 @@ export const chatApiSlice = apiSlice.injectEndpoints({
               try {
                 await cacheDataLoaded;
            
-                const socket = getSocket();
+                const socket = getSocket(body.auth);
 
                 socket.on(ChatClientEvent.ReceiveMessage, (message: any) => {
-                    updateCachedData((draft) => {
-                      draft.push(message);
-                    });
+                      updateCachedData((draft) => {
+                        draft.push(message);
+                      });                  
                   });
            
                 socket.on('connect', () => {
@@ -81,7 +81,7 @@ export const chatApiSlice = apiSlice.injectEndpoints({
               try {
                 await cacheDataLoaded;
            
-                const socket = getSocket();
+                const socket = getSocket(body.auth);
 
                 socket.on(ChatClientEvent.ReceiveDialogs, (message: any) => {
                     updateCachedData((draft) => {

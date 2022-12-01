@@ -10,9 +10,9 @@ import { Menu } from '@mui/icons-material';
 
 const NAV_WIDTH = 280;
 const HEADER_MOBILE = 64;
-const HEADER_DESKTOP = 92;
+const HEADER_DESKTOP = 64;
 
-const StyledRoot = styled(AppBar)(({ theme }) => ({
+export const StyledRoot = styled(AppBar)(({ theme }) => ({
   ...bgBlur({ color: theme.palette.background.default }),
   boxShadow: 'none',
   [theme.breakpoints.up('lg')]: 
@@ -21,7 +21,7 @@ const StyledRoot = styled(AppBar)(({ theme }) => ({
   },
 }));
 
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   minHeight: HEADER_MOBILE,
   [theme.breakpoints.up('lg')]: {
     minHeight: HEADER_DESKTOP,

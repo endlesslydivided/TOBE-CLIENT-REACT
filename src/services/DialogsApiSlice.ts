@@ -30,6 +30,15 @@ export const dialogApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags:(result, error, arg) =>  [{type:'Dialog',id:arg.id},'Dialog','CurrentUser']
             
+        }),
+        getOneDialog: builder.query({
+            query: ({ id }) =>
+            ({
+                url: `/dialogs/${id}`,
+                method: 'GET',
+                credentials: 'include',
+            }),
+            
         })
          
     })
@@ -39,5 +48,6 @@ export const dialogApiSlice = apiSlice.injectEndpoints({
 export const {
 useCreateDialogMutation,
 useUpdateDialogMutation,
-useDeleteDialogMutation
+useDeleteDialogMutation,
+useGetOneDialogQuery
 } = dialogApiSlice;

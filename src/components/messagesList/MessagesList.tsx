@@ -26,6 +26,7 @@ interface IMessagesListItemProps
 {
     message: any;
     userState: any;
+    lastMessageRef: void;
 }
 
 const checkStatus = (status,successMessage) => 
@@ -49,16 +50,17 @@ const checkStatus = (status,successMessage) =>
 };
 
 
-const MessagesList:FC<IMessagesListProps>= ({messagesList,listItem:ListItem,...other}) => {
+const MessagesList:FC<IMessagesListProps>= ({messagesList,listItem:ListItem,lastMessageRef,...other}) => {
   
   const userState :any = useAppSelector(state => state.auth.user);
 
   return (
-    <List disablePadding sx={{ p: 1 }}>
+    <List disablePadding  sx={{ p: 1, display:"flex",flexDirection:'column-reverse'}}>
         {
             messagesList.map((message:any,index:number) =>
                 <>
                     <ListItem message={message} userState={userState}/>
+                    {index === messagesList.length -1 &&  <div ref={lastMessageRef} style={{height: 0}}/>}
                 </>            
             )
         }
@@ -71,22 +73,31 @@ export const  MessageListItem:FC<IMessagesListItemProps> = ({message,userState})
 {
   return (
     <ListItem  key={message.id}>
-      <Grid container alignItems="center"   justifyContent="end" spacing={1}>
-        <Grid item xs={9} > 
-          <ListItemText 
-            sx={{py:0.2}}
-            secondaryTypographyProps={{mt:0.5}}
-            primary={`${message.user.firstName} ${message.user.lastName}`}
-            secondary={
-                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.secondary">
+      <Grid container alignItems="center"  spacing={1}>
+        <Grid item  xs={12} > 
+          <Stack direction="row" sx={{mx:2,}} spacing={0.1} > 
+              <ListItemAvatar>
+                {
+                  <Avatar  sx={{ width: "40px" , height: "40px"}} alt={`${message.user.firstName} ${message.user.lastName}`} 
+                  src={message.user.photo?.path && process.env.REACT_APP_API_URL + message.user.photo?.path}  />
+                }
+               
+              </ListItemAvatar>
+              <Stack direction="column"  spacing={0.1} > 
+                <Stack direction="row"  spacing={0.1}>
+                  <Typography  variant="subtitle2" >  
+                    {`${message.user.firstName} ${message.user.lastName}`}
+                  </Typography>
+                  <Typography  variant="body2" sx={{pl:0.9}} color="text.secondary" >  
                     {fDateTime(message.createdAt)}
-                </Typography>         
-            }
-          /> 
-          <ListItemText 
-            secondaryTypographyProps={{mt:0.5}}
-            primary={`${message.text}`}
-          /> 
+                  </Typography>   
+                </Stack>
+              <ListItemText 
+                secondaryTypographyProps={{mt:0.5}}
+                primary={`${message.text}`}
+                /> 
+              </Stack>
+          </Stack>
         </Grid>
       </Grid>
     </ListItem>

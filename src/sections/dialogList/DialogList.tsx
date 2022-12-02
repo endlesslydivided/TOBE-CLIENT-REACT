@@ -93,17 +93,17 @@ const DialogList:FC<IDialogListProps>= ({filters,setFilters,...other}) =>
 
   return(
     <Card {...other}>                     
-        <CardContent  sx={{ p: 1,pb:0 }}>
-        {
-          dialogs?.rows && dialogs?.count !== 0  ? 
-          <AvatarList listItem={DialogListItem} membersList={dialogs?.rows}/>
-          : isFethingDialogs ? <LineLoader/> : notFound        
-        } 
-          <div ref={lastDialogRef} style={{height: 0}}/>
-        {
-          dialogs?.rows && dialogs?.count !== 0 && isFethingDialogs &&<LineLoader/> 
-        }                      
-        </CardContent>               
+      <CardContent  sx={{ p: 1,pb:0 }}>
+      {
+        dialogs?.rows && dialogs?.count !== 0  ? 
+        <AvatarList listItem={DialogListItem} membersList={dialogs?.rows}/>
+        : isFethingDialogs ? <LineLoader/> : notFound        
+      } 
+        <div ref={lastDialogRef} style={{height: 0}}/>
+      {
+        dialogs?.rows && dialogs?.count !== 0 && isFethingDialogs &&<LineLoader/> 
+      }                      
+      </CardContent>               
     </Card>
   );
 }

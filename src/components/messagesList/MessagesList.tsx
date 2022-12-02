@@ -55,16 +55,19 @@ const MessagesList:FC<IMessagesListProps>= ({messagesList,listItem:ListItem,last
   const userState :any = useAppSelector(state => state.auth.user);
 
   return (
-    <List disablePadding  sx={{ p: 1, display:"flex",flexDirection:'column-reverse'}}>
+    <>
+    <List disablePadding  sx={{ m: 4, display:"flex",width:'100%', flexDirection:'column'}}>
+    <div ref={lastMessageRef} style={{height: 5, backgroundColor:'red'}}/>
+
         {
             messagesList.map((message:any,index:number) =>
                 <>
-                    <ListItem message={message} userState={userState}/>
-                    {index === messagesList.length -1 &&  <div ref={lastMessageRef} style={{height: 0}}/>}
+                    <ListItem style={{flexAlign:'flex-end'}} message={message} userState={userState}/>
                 </>            
             )
         }
     </List>
+    </>
   );
 }
 

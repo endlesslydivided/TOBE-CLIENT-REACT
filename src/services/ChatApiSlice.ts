@@ -36,19 +36,21 @@ export const chatApiSlice = apiSlice.injectEndpoints({
                 const socket = getSocket(body.auth);
                 return new Promise(resolve => 
                 {
-                    socket.emit(ChatServerEvent.SendMessage, body, (message: any) => {
+                  socket.on(ChatClientEvent.ReceiveMessage, (message: any) => {
                     resolve({ data: message });
-                });
+             
+                  });
+         
+                    socket.emit(ChatServerEvent.SendMessage, body);
             })
             },
         }),
         getMessages: builder.query<any, void>({
             queryFn: () => ({ data: [] }),
-            async onCacheEntryAdded(
-              body,
-              { cacheDataLoaded, cacheEntryRemoved, updateCachedData },
-            ) {
-              try {
+            async onCacheEntryAdded(body,{ cacheDataLoaded, cacheEntryRemoved, updateCachedData }) 
+            {
+              try 
+              {
                 await cacheDataLoaded;
            
                 const socket = getSocket(body.auth);
@@ -58,18 +60,23 @@ export const chatApiSlice = apiSlice.injectEndpoints({
                         draft.push(message);
                       });                  
                   });
-           
+
+                if(socket.connected)
+                {
+                  socket.emit(ChatServerEvent.GetDialogMessages,body);
+                }
                 socket.on('connect', () => {
                   socket.emit(ChatServerEvent.GetDialogMessages,body);
                 });
            
-                await cacheEntryRemoved;
-           
-                socket.off('connect');
-                socket.off(ChatServerEvent.ReceiveMessage);
+               
               } catch {
                               
               }
+              await cacheEntryRemoved;
+           
+              socket.off('connect');
+              socket.off(ChatServerEvent.ReceiveMessage);
             },
         }),
         getDialogs: builder.query<any, void>({
@@ -109,5 +116,6 @@ export const chatApiSlice = apiSlice.injectEndpoints({
 
 export const {
 useSendMessageMutation,
+useLazyGetMessagesQuery,
 useGetMessagesQuery,
 useGetDialogsQuery,} = chatApiSlice;

@@ -16,7 +16,7 @@ import { Search, SearchIconWrapper, StyledInputBase } from '../components/search
 import SearchIcon from '@mui/icons-material/Search';
 import { ObjectPair } from 'zod';
 import LineLoader from '../components/LineLoader';
-import { useGetDialogsQuery, useGetMessagesQuery } from '../services/ChatApiSlice';
+import { useGetDialogsQuery, useGetMessagesQuery, useLazyGetMessagesQuery } from '../services/ChatApiSlice';
 import MessagesList from '../components/messagesList';
 import { MessageListItem } from '../components/messagesList/MessagesList';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,7 +34,7 @@ interface IDialogSectionProps
 const initialFilters=
 {
     search: '',
-    page: 1,
+    lastDate: Date.MA,
     limit: 10,
     fixedLimit: 10,
     orderBy:'createdAt',
@@ -48,62 +48,71 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
     const {id} = useParams();
     const [filters,setFilters] = useState(initialFilters)
     const [messages,setMessages] = useState({rows:[],count:0});
-    const [totalPages, setTotalPages] = useState(0);
+    const [countLeft, setCountLeft] = useState(0);
     const [dialogUser,setDialogUser] = useState(null);
 
     const lastElement = useRef()
-    const { data, error:errorMessages,isSuccess:isSuccessMessages, isLoading:isLoadingMessages,isFetching:isFethingMessages}  
-    = useGetMessagesQuery({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}});
+    const bottom = useRef()
+
+    const [ trigger,{data, 
+      error:errorMessages,
+      isSuccess:isSuccessMessages, 
+      isLoading:isLoadingMessages,
+      isFetching:isFethingMessages}
+      ] = useLazyGetMessagesQuery();
 
     const { data:dialog, error:errorDialog,isSuccess:isSuccessDialog, isLoading:isLoadingDialog}  
     = useGetOneDialogQuery({id: id && parseInt(id)});
 
-
+      useEffect(()=>
+      {
+        trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true);
+      },[])
 
 
     const navigate = useNavigate();
 
     const lastMessageRef = useCallback(message =>
       {
-        if(isLoadingMessages) return;
+        if(isFethingMessages) return;
 
         if(lastElement.current) lastElement.current.disconnect();
 
         lastElement.current = new IntersectionObserver(messages=>
           {
-            if(messages[0].isIntersecting &&  filters.page <= totalPages)
+            if(messages[0].isIntersecting &&  countLeft !== 0)
             {
-              setFilters({...filters, page: filters.page + 1} );
+              trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true)
             }
           })
 
         if (message) lastElement.current.observe(message);
-      },[isLoadingMessages,totalPages])
+      },[isFethingMessages,countLeft])
 
     useEffect(() => 
     {
       if(isSuccessMessages && data && data.length !== 0)
       {
+        const messagesData = data[data.length - 1];
+
         if(data[data.length - 1].rows)
         {
-          const messagesData = data[data.length - 1];
-          setMessages({rows:[...messages.rows,...messagesData.rows],count:messagesData.count});
-          setTotalPages(Math.ceil(messagesData.count /  filters.fixedLimit));
+          const reversed = [...messagesData.rows].reverse();
+          if(messagesData.count !== 0)
+          {
+            setMessages({rows:[...reversed,...messages.rows],count:messagesData.count});
+            setFilters({...filters,lastDate:reversed[0].createdAt});
+          }
+          setCountLeft(messagesData.count);
+          bottom.current.scrollIntoView({ behavior: "smooth" });
         }
         else
         {
-          const messagesData = data[data.length - 1];
           const message = {...messagesData.message,user : messagesData.user}
           setMessages({rows:[...messages.rows,message],count:messages.count + 1});
-          setFilters(
-          {...filters,
-            limit:(filters.limit - 1 > 0 ? filters.limit - 1: filters.fixedLimit),
-            page: (filters.limit - 1 > 0 ? filters.page: filters.page + 1)
-          })
-        }
-    
-      }
-      
+          bottom.current.scrollIntoView({ behavior: "smooth" });
+        } 
+      }      
     },[isFethingMessages, data])
 
     const checkQuery = (error:any) => 
@@ -140,8 +149,8 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
 
 
     return(
-      <Grid container justifyContent="center" display="flex" >
-        <Grid xs={12} md={12} item>
+      <Grid container sx={{height:'100%'}}>
+        <Grid xs={12} md={12} item sx={{height:'0%'}}>
           <StyledRoot sx={{bgcolor:"grey.300" }}>
             <Toolbar>
               <IconButton onClick={() => navigate('/user/chat')} >
@@ -167,7 +176,7 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
           </StyledRoot>
         </Grid>
 
-        <Grid xs={12} md={12} item>
+        <Grid xs={12} md={12} style={{display:'flex', flexDirection:'column',height:'100%',width:"100%",alignItems:'center',justifyContent:'flex-end'}} item>
               {
                 messages?.rows && messages?.count !== 0  ? 
                 <MessagesList lastMessageRef={lastMessageRef} listItem={MessageListItem} messagesList={messages?.rows}/>
@@ -178,7 +187,7 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
               }                                
         </Grid>
         
-        <Grid xs={12} md={12}  item>
+        <Grid xs={12} md={12}  item sx={{height:'0%'}}>
             <StyledRoot sx={{bgcolor:"grey.300", top: 'auto', bottom: 0 }}>
               <Toolbar>
                 <Divider variant="horizontal"/>
@@ -189,7 +198,9 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
             </StyledRoot>
             
             
-          </Grid>        
+          </Grid>
+          <div ref={bottom} style={{height: 0}}/>
+        
       </Grid>
   );
 }

@@ -21,7 +21,7 @@ const  getSocket = (auth) =>
 {
     if (!socket) 
     {
-        socket = io(process.env.REACT_APP_API_URL_WS ,{path: '/chat', withCredentials: true,auth});
+        socket = io.connect(process.env.REACT_APP_API_URL_WS ,{path: '/chat', withCredentials: true,auth,forceNew:true});
     }
     return socket;
 }
@@ -41,12 +41,12 @@ export const chatApiSlice = apiSlice.injectEndpoints({
              
                   });
          
-                    socket.emit(ChatServerEvent.SendMessage, body);
-            })
+                  socket.emit(ChatServerEvent.SendMessage, body);
+                })
             },
         }),
         getMessages: builder.query<any, void>({
-            queryFn: () => ({ data: [] }),
+            queryFn: () => ({ data: {count: 0, rows: [], havingResults: false} }),
             async onCacheEntryAdded(body,{ cacheDataLoaded, cacheEntryRemoved, updateCachedData }) 
             {
               try 
@@ -55,11 +55,29 @@ export const chatApiSlice = apiSlice.injectEndpoints({
            
                 const socket = getSocket(body.auth);
 
-                socket.on(ChatClientEvent.ReceiveMessage, (message: any) => {
-                      updateCachedData((draft) => {
-                        draft.push(message);
-                      });                  
-                  });
+                socket.on(ChatClientEvent.ReceiveMessage, (data: any) => 
+                {
+                  let rows,count,message;
+                  if(data.rows)
+                  {
+                    rows = data.rows;                    
+                    count = data.count;
+                    updateCachedData((draft) => {
+                      draft.count = count;
+                      draft.rows.push(...rows);
+                      draft.havingResults = true;
+                    });            
+                  }
+                  else
+                  {
+                    message = data;
+                    updateCachedData((draft) => {
+                      draft.rows.push(message);
+                      draft.havingResults = true;
+                    });            
+                  }
+                      
+                });
 
                 if(socket.connected)
                 {
@@ -68,15 +86,17 @@ export const chatApiSlice = apiSlice.injectEndpoints({
                 socket.on('connect', () => {
                   socket.emit(ChatServerEvent.GetDialogMessages,body);
                 });
+                
+                await cacheEntryRemoved;
            
-               
-              } catch {
+                socket.off('connect');
+                socket.off(ChatServerEvent.ReceiveMessage);
+                socket.disconnect() ;
+              } catch (error) {
+                console.log(error);
                               
               }
-              await cacheEntryRemoved;
-           
-              socket.off('connect');
-              socket.off(ChatServerEvent.ReceiveMessage);
+            
             },
         }),
         getDialogs: builder.query<any, void>({

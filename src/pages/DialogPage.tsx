@@ -47,14 +47,14 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
 
     const {id} = useParams();
     const [filters,setFilters] = useState(initialFilters)
-    const [messages,setMessages] = useState({rows:[],count:0});
+    const [messages,setMessages] = useState({rows:[],count:1});
     const [countLeft, setCountLeft] = useState(0);
     const [dialogUser,setDialogUser] = useState(null);
 
     const lastElement = useRef()
     const bottom = useRef()
 
-    const [ trigger,{data, 
+    const [ trigger,{data, currentData,
       error:errorMessages,
       isSuccess:isSuccessMessages, 
       isLoading:isLoadingMessages,
@@ -82,7 +82,7 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
           {
             if(messages[0].isIntersecting &&  countLeft !== 0)
             {
-              trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true)
+              trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},false)
             }
           })
 
@@ -91,29 +91,36 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
 
     useEffect(() => 
     {
-      if(isSuccessMessages && data && data.length !== 0)
+      if(data?.havingResults)
       {
-        const messagesData = data[data.length - 1];
+        const reversed =[...data.rows].reverse();
+        setMessages({rows:[...reversed,...messages.rows],count:1});
+        setFilters({...filters,lastDate:reversed[0]?.createdAt});
+        setCountLeft(data.count);
 
-        if(data[data.length - 1].rows)
-        {
-          const reversed = [...messagesData.rows].reverse();
-          if(messagesData.count !== 0)
-          {
-            setMessages({rows:[...reversed,...messages.rows],count:messagesData.count});
-            setFilters({...filters,lastDate:reversed[0].createdAt});
-          }
-          setCountLeft(messagesData.count);
-          bottom.current.scrollIntoView({ behavior: "smooth" });
-        }
-        else
-        {
-          const message = {...messagesData.message,user : messagesData.user}
-          setMessages({rows:[...messages.rows,message],count:messages.count + 1});
-          bottom.current.scrollIntoView({ behavior: "smooth" });
-        } 
-      }      
-    },[isFethingMessages, data])
+        // const messagesData = data[data.length - 1];
+        // const allMessages = data.map((x) => x.rows? x.rows : {...x.message,user:x.user}).flat();
+        // const lastCount = data.filter((x) => x.count)[0]?.count;
+        // if(data[data.length - 1].rows)
+        // {
+        //   const reversed = [...messagesData.rows].reverse();
+        //   if(messagesData.count !== 0)
+        //   {
+        //     setMessages({rows:[...reversed,...messages.rows],count:messagesData.count});
+        //     setFilters({...filters,lastDate:reversed[0].createdAt});
+        //   }
+        //   setCountLeft(messagesData.count);
+        //   bottom.current.scrollIntoView({ behavior: "smooth" });
+        // }
+        // else
+        // {
+        //   const message = {...messagesData.message,user : messagesData.user}
+        //   setMessages({rows:[...messages.rows,message],count:messages.count + 1});
+        //   bottom.current.scrollIntoView({ behavior: "smooth" });
+        // } 
+      } 
+     
+    },[data])
 
     const checkQuery = (error:any) => 
       {

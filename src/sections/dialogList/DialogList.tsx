@@ -47,7 +47,7 @@ const DialogList:FC<IDialogListProps>= ({filters,setFilters,...other}) =>
 
       lastElement.current = new IntersectionObserver(dialogs=>
         {
-          if(dialogs[0].isIntersecting &&  filters.page < totalPages)
+          if(dialogs[0].isIntersecting && filters.page < totalPages)
           {
             setFilters({...filters, page: filters.page + 1} );
           }

@@ -8,6 +8,8 @@ import { anonymousRoutesManager, roleRoutesManager } from '../utils/routes';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import Layout from '../layouts/dashboard/DashboardLayout';
+import AdminLayout from '../layouts/adminDashboard/AdminDashboardLayout';
+
 import ProfilePage from '../pages/ProfilePage';
 import { ALBUM_ROUTE, CHAT_ROUTE, FEED_ROUTE, USERS_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE } from '../utils/consts';
 import UnauthorizePage from '../pages/UnauthorizePage';
@@ -18,6 +20,7 @@ import FeedPage from '../pages/FeedPage';
 import AlbumsPage from '../pages/AlbumsPage';
 import UserPage from '../pages/UserPage';
 import DialogPage from '../pages/DialogPage';
+import MainAdminPage from '../pages/AdminPages/MainAdminPage';
 
 
 const AppRouter = () => {
@@ -56,10 +59,13 @@ const AppRouter = () => {
       }      
       {
         user.roles.some((role:any) => role.name === "ADMIN") &&
-        (<><Route path="admin" element={<Layout/>} >
-          <Route index element={<ProfilePage/>}/>
+        ( 
+        <>
+          <Route path="admin" element={<AdminLayout/>} >
+            <Route index element={<MainAdminPage/>}/>
           </Route>
-          <Route path="*"  element={<Navigate to="/user" replace/>}/></>)
+          <Route path="*"  element={<Navigate to="/admin" replace/>}/>
+        </>)
       }
     </Routes>   
     :

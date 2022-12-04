@@ -1,9 +1,9 @@
 //@ts-nocheck
 import PropTypes from 'prop-types';
 import { FC, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
+import { Box,  Button, Drawer, Typography, Avatar, Stack } from '@mui/material';
 
 import useResponsive from '../../../hooks/useResponsive';
 
@@ -46,28 +46,30 @@ const Nav: FC<INavProps> = ({ openNav, onCloseNav }) =>{
 
   const renderContent = (
     <Scrollbar sx={{height: 1,'& .simplebar-content': { height: 1, display: 'flex', flexDirection: 'column' }}}>
-      <Box sx={{ px: 2.5, py: 3, display: 'inline-flex' }}>
-        <Logo />
+      <Box sx={{ px: 2.5, py: 1.5, display: 'inline-flex',justifyContent:'center' }}>
+        <Typography variant="h3" gutterBottom>tobe</Typography>
       </Box>
 
-      <Box sx={{ mb: 5, mx: 2.5 }}>
-        <Link underline="none">
-          <StyledAccount>
-            
-            <Avatar src={user?.photo?.path && process.env.REACT_APP_API_URL + user?.photo?.path}  alt="photoURL" />
-            
-           
 
-            <Box sx={{ ml: 2 }}>
-              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {`${user.firstName} ${user.lastName}`}
-              </Typography>
+        <Box sx={{ mb: 2.5, mx: 2.5 }}>
+          <Link style={{textDecoration:'none'}} to={`/user/users/${user.id}`}>
 
-             
-            </Box>
-          </StyledAccount>
-        </Link>
-      </Box>
+            <StyledAccount>
+              
+              <Avatar src={user?.photo?.path && process.env.REACT_APP_API_URL + user?.photo?.path}  alt="photoURL" />
+              
+            
+
+              <Box sx={{ ml: 2 }}>
+                <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
+                  {`${user.firstName} ${user.lastName}`}
+                </Typography>
+
+              
+              </Box>
+            </StyledAccount>
+          </Link>
+        </Box>  
 
       <NavSection data={navConfig} user={user} />
 

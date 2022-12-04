@@ -21,7 +21,7 @@ const  getSocket = (auth) =>
 {
     if (!socket) 
     {
-        socket = io.connect(process.env.REACT_APP_API_URL_WS ,{path: '/chat', withCredentials: true,auth,forceNew:true});
+        socket = io.connect(process.env.REACT_APP_API_URL_WS ,{path: '/chat', withCredentials: true,auth,forceNewConnection:true});
     }
     return socket;
 }
@@ -57,25 +57,24 @@ export const chatApiSlice = apiSlice.injectEndpoints({
 
                 socket.on(ChatClientEvent.ReceiveMessage, (data: any) => 
                 {
-                  let rows,count,message;
+                  let rows,count,messageItem;
                   if(data.rows)
                   {
                     rows = data.rows;                    
                     count = data.count;
-                    updateCachedData((draft) => {
-                      draft.count = count;
-                      draft.rows.push(...rows);
-                      draft.havingResults = true;
-                    });            
                   }
                   else
                   {
-                    message = data;
-                    updateCachedData((draft) => {
-                      draft.rows.push(message);
-                      draft.havingResults = true;
-                    });            
+                    messageItem = data;
+                    let message = {...messageItem?.message,user: messageItem?.user,sent: true};
+                    rows = [message];
                   }
+
+                  updateCachedData((draft) => {
+                    draft.count = data.count ?? draft.count;
+                    draft.rows.push(...rows);
+                    draft.havingResults = true;
+                  });            
                       
                 });
 
@@ -91,7 +90,6 @@ export const chatApiSlice = apiSlice.injectEndpoints({
            
                 socket.off('connect');
                 socket.off(ChatServerEvent.ReceiveMessage);
-                socket.disconnect() ;
               } catch (error) {
                 console.log(error);
                               

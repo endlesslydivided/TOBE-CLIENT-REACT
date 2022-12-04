@@ -1,8 +1,8 @@
 //@ts-nocheck
 import { styled } from  '@mui/material/styles';
-import { AppBar, Card, CardActions, CardContent, CardHeader, Divider, FormControlLabel, FormGroup, IconButton, List, ListItemText, Switch, Tab, Tabs, Toolbar } from '@mui/material';
+import { AppBar, Card, CardActions, CardContent, CardHeader, Divider,Fab, FormControlLabel, FormGroup, IconButton, List, ListItemText, Switch, Tab, Tabs, Toolbar } from '@mui/material';
 import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { Add, ArrowLeft, DateRange, Language, LocationCity, Wc } from '@mui/icons-material';
+import { Add, ArrowLeft, DateRange, KeyboardArrowDown, Language, LocationCity, Wc } from '@mui/icons-material';
 import { Box, Button, Container, Grid, Typography } from '@mui/material';
 import Image from 'mui-image';
 import { DateTimePicker } from '@mui/lab';
@@ -19,12 +19,14 @@ import LineLoader from '../components/LineLoader';
 import { useGetDialogsQuery, useGetMessagesQuery, useLazyGetMessagesQuery } from '../services/ChatApiSlice';
 import MessagesList from '../components/messagesList';
 import { MessageListItem } from '../components/messagesList/MessagesList';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import DialogForm from '../sections/chat/DialogForm';
 import { StyledRoot } from '../layouts/dashboard/header';
 import { useGetOneDialogQuery } from '../services/DialogsApiSlice';
 import { Avatar } from '@material-ui/core';
 import { Stack } from '@mui/system';
+import ScrollTo from '../components/ScrollTo';
+import ScrollBottom from '../components/ui/ScrollBottom';
 
 interface IDialogSectionProps
 {
@@ -47,7 +49,7 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
 
     const {id} = useParams();
     const [filters,setFilters] = useState(initialFilters)
-    const [messages,setMessages] = useState({rows:[],count:1});
+    const [messages,setMessages] = useState({rows:[],count:0});
     const [countLeft, setCountLeft] = useState(0);
     const [dialogUser,setDialogUser] = useState(null);
 
@@ -93,9 +95,14 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
     {
       if(data?.havingResults)
       {
-        const reversed =[...data.rows].reverse();
-        setMessages({rows:[...reversed,...messages.rows],count:1});
-        setFilters({...filters,lastDate:reversed[0]?.createdAt});
+        const beforeMessages =[...data.rows].filter(x => x?.sent);
+        const afterMessages =[...data.rows].filter(x => !x?.sent).reverse();
+        const newMessagesBefore = beforeMessages.filter(message => !messages.rows.some(x => message.id === x.id));
+        const newMessagesAfter = afterMessages.filter(message => !messages.rows.some(x => message.id === x.id));
+        const setNewMessageArr = [...newMessagesAfter,...messages.rows,...newMessagesBefore];
+
+        setMessages({rows:setNewMessageArr,count:1});
+        setFilters({...filters,lastDate:setNewMessageArr[0]?.createdAt});
         setCountLeft(data.count);
 
         // const messagesData = data[data.length - 1];
@@ -165,29 +172,34 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
               </IconButton>
               <Box sx={{ flexGrow: 1 }} />
 
-              <Stack direction="row" alignItems="center" spacing={{xs: 0.5,sm: 1}}>
-                {
-                  dialogUser && <Avatar  sx={{ width: "40px" , height: "40px"}} 
-                  alt={`${dialogUser.firstName} ${dialogUser.lastName}`} 
-                  src={dialogUser.photo?.path && process.env.REACT_APP_API_URL + dialogUser.photo?.path}  />
-                }
-                <Stack direction="column"  spacing={0.1} > 
-                  <Stack direction="row"  spacing={0.1}>
-                    <Typography  variant="subtitle2" color="black">  
-                      {dialogUser && `${dialogUser.firstName} ${dialogUser.lastName}`}
-                    </Typography> 
+              <Link to={`/user/users/${dialogUser && dialogUser.id}`} style={{textDecoration:'none'}}>
+                <Stack direction="row" alignItems="center" spacing={{xs: 0.5,sm: 1}}>
+                  {
+                    dialogUser && <Avatar  sx={{ width: "40px" , height: "40px"}} 
+                    alt={`${dialogUser.firstName} ${dialogUser.lastName}`} 
+                    src={dialogUser.photo?.path && process.env.REACT_APP_API_URL + dialogUser.photo?.path}  />
+                  }
+                  <Stack direction="column"  spacing={0.1} > 
+                    <Stack direction="row"  spacing={0.1}>
+                      <Typography  variant="subtitle2" color="black">  
+                        {dialogUser && `${dialogUser.firstName} ${dialogUser.lastName}`}
+                      </Typography> 
+                    </Stack>
                   </Stack>
                 </Stack>
-              </Stack>
+              </Link>
+
+              <Box sx={{ flexGrow: 1.2 }} />
             </Toolbar>
           </StyledRoot>
         </Grid>
 
         <Grid xs={12} md={12} style={{display:'flex', flexDirection:'column',height:'100%',width:"100%",alignItems:'center',justifyContent:'flex-end'}} item>
               {
-                messages?.rows && messages?.count !== 0  ? 
-                <MessagesList lastMessageRef={lastMessageRef} listItem={MessageListItem} messagesList={messages?.rows}/>
-                : isFethingMessages ? <LineLoader/> : notFound        
+                  messages?.rows && messages?.count !== 0  ? 
+                  <MessagesList lastMessageRef={lastMessageRef} listItem={MessageListItem} messagesList={messages?.rows}/>
+                  : isFethingMessages ? <LineLoader/> : notFound        
+
               } 
               {
                 messages?.rows && messages?.count !== 0 && isFethingMessages &&<LineLoader/> 
@@ -195,19 +207,20 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
         </Grid>
         
         <Grid xs={12} md={12}  item sx={{height:'0%'}}>
-            <StyledRoot sx={{bgcolor:"grey.300", top: 'auto', bottom: 0 }}>
-              <Toolbar>
-                <Divider variant="horizontal"/>
+          <StyledRoot sx={{bgcolor:"grey.300", top: 'auto', bottom: 0 }}>
+            <Toolbar>
+              <Divider variant="horizontal"/>
 
-                <DialogForm  dialogId={id}/>
-              </Toolbar>
-                
-            </StyledRoot>
-            
-            
-          </Grid>
-          <div ref={bottom} style={{height: 0}}/>
-        
+              <DialogForm  dialogId={id}/>
+            </Toolbar>
+              
+          </StyledRoot>                      
+        </Grid>        
+        <ScrollBottom >
+            <Fab size="large" color="info" aria-label="scroll back to bottom">
+                <KeyboardArrowDown />
+            </Fab>
+        </ScrollBottom>
       </Grid>
   );
 }

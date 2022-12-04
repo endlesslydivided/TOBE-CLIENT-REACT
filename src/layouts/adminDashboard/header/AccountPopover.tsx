@@ -96,19 +96,6 @@ export default function AccountPopover()
           </Typography>
         </Box>
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Stack sx={{ p: 1 }}>
-            <MenuItem key={'Профиль'}  onClick={handleProfile}>
-              <ListItemIcon>
-                <Person  fontSize="small"/>
-              </ListItemIcon>
-                Профиль
-            </MenuItem>
-        </Stack>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
         <MenuItem onClick={onLogoutHandler} sx={{ m: 1 }} >
           <ListItemIcon>
             <ExitToApp  fontSize="small"/>

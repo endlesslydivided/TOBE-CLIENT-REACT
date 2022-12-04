@@ -29,7 +29,7 @@ interface IAvatarListItemProps
 
 const checkStatus = (status,successMessage) => 
     {
-        if (status.isSuccess) 
+        if (status.isSuccess && successMessage) 
         {
           toast.success(successMessage);
         }
@@ -75,7 +75,7 @@ export const  UsersListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
   const [deleteFriend,deleteFriendStatus] = useDeleteFriendMutation();
 
   useEffect(() => checkStatus(createFriendStatus,`Друг добавлен`),[createFriendStatus.isLoading]);
-  useEffect(() => checkStatus(createDialogStatus,`Диалог создан`),[createDialogStatus.isLoading]);
+  useEffect(() => checkStatus(createDialogStatus),[createDialogStatus.isLoading]);
   useEffect(() => checkStatus(deleteFriendStatus,`Друг удалён`),[deleteFriendStatus.isLoading]);
 
   const writeMessageHandler=  async () =>
@@ -83,7 +83,7 @@ export const  UsersListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
     const {data} = await createDialog({name:`${member.firstName} ${member.lastName}`,isChat:false,creatorId:userState.id,usersId:[member.id]});
     if(data)
     {
-      navigate(`/user/chat/${data.id}`);
+      navigate(`/user/chat/${data.dialog.id}`);
     }
   }
 

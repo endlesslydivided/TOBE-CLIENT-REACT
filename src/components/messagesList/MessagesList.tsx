@@ -57,7 +57,7 @@ const MessagesList:FC<IMessagesListProps>= ({messagesList,listItem:ListItem,last
   return (
     <>
     <List disablePadding  sx={{ m: 4, display:"flex",width:'100%', flexDirection:'column'}}>
-    <div ref={lastMessageRef} style={{height: 5, backgroundColor:'red'}}/>
+    <div ref={lastMessageRef} style={{height: 5}}/>
 
         {
             messagesList.map((message:any,index:number) =>
@@ -66,6 +66,8 @@ const MessagesList:FC<IMessagesListProps>= ({messagesList,listItem:ListItem,last
                 </>            
             )
         }
+    <div id='back-to-bottom-anchor' style={{height: 0}}/>
+
     </List>
     </>
   );

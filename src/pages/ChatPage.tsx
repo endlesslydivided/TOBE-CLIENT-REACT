@@ -48,7 +48,7 @@ const ChatPage = () =>
                         </FormGroup>
                     </Card>
                 </Grid>
-                <Grid item xs={8} md={8} lg={8}>
+                <Grid item xs={12} md={12} lg={12}>
                     <DialogList filters={filters} setFilters={setFilters}/>
                 </Grid>
             </Grid>

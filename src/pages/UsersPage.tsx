@@ -45,7 +45,7 @@ const UsersPage = () =>
                                 </SearchIconWrapper>
                                 <StyledInputBase
                                     value={filters.search}
-                                    onChange={(e) => setFilters({...filters,search:e.target.value})}
+                                    onChange={(e) => setFilters(previous => ({...previous,search:e.target.value}))}
                                     sx={{width:'100%'}}
                                     placeholder="Поиск..."
                                     inputProps={{ 'aria-label': 'search' }}

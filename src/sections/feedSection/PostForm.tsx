@@ -16,7 +16,7 @@ import { Search, SearchIconWrapper, StyledInputBase } from '../../components/sea
 import SearchIcon from '@mui/icons-material/Search';
 import { object, ObjectPair, string, TypeOf } from 'zod';
 import NewsList, { FeedListItem } from '../../components/newsList/NewsList';
-import { useCreatePostMutation } from '../../services/PostsService';
+import { useCreatePostMutation, useGetOnePostQuery, useLazyGetOnePostQuery } from '../../services/PostsService';
 import { Controller, FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FileButton from '../../components/fileButton/FileButton';
@@ -32,6 +32,7 @@ import PostFormAudios from '../../components/postParts/audioList/PostFormAudios'
 interface IPostForm
 {
     isDropActive: boolean;
+    setPosts: Function | null;
 }
 
 const postSchema =object({
@@ -42,9 +43,25 @@ const postSchema =object({
     description: string().max(255,'Длина описание - не более 255 символов').optional().default('')
 });
 
+const checkQuery = (error:any) => 
+{
+    if (error) 
+    {
+      if (Array.isArray((error as any).data.error)) 
+      {
+        (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+      } 
+      else 
+      {
+        toast.error((error as any).data.message, {position: 'top-right',});
+      }
+    }
+};
+
+
 export type PostInput = TypeOf<typeof postSchema>;
 
-const PostForm:FC<IPostForm>= ({isDropActive,...other}) => 
+const PostForm:FC<IPostForm>= ({isDropActive,setPosts,posts,...other}) => 
 {
   const userState :any = useAppSelector(state => state.auth.user);
 
@@ -54,17 +71,19 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) =>
 
   const TDRef = useRef(null);
 
-  const [createPost,{ isLoading, isSuccess, error, isError }]  = useCreatePostMutation();
+  const [createPost,result]  = useCreatePostMutation();
+  const [trigger,getPostResult] = useLazyGetOnePostQuery();
 
   useEffect(() => 
   {
-      if (isSuccess) 
+      if (result.isSuccess) 
       {
         toast.success('Пост создан успешно');
       }
 
-      if (isError) 
+      if (result.isError) 
       {
+        const error = result.error;
         if (Array.isArray((error as any).data.error)) 
         {
           (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
@@ -74,31 +93,43 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) =>
           toast.error((error as any).data.message, {position: 'top-right',});
         }
       }
-  }, [isLoading]);
+  }, [result.isLoading]);
+
+  useEffect(() => checkQuery(result.error),[result.isLoading]);
+  useEffect(() => checkQuery(getPostResult.error),[getPostResult.isLoading]);
 
   useEffect(() =>{
   {
-    if(isSubmitSuccessful && isSuccess)
+    if(isSubmitSuccessful && result.isSuccess)
     {
       reset();
-      setFiles([]);
+      setFiles([]);   
     }
-  }}, [isSubmitSuccessful,isSuccess]);
+  }}, [isSubmitSuccessful,result.isSuccess]);
+
+  useEffect(() =>{
+    {
+      if(getPostResult.isSuccess)
+      {
+        setPosts({rows:[getPostResult.data,...posts.rows],count:posts.count});
+      }
+    }}, [getPostResult.isFetching]);
 
   const onSubmitHandler: SubmitHandler<PostInput> = async (values) => 
   {     
       const formData = new FormData();
-      files.forEach((file) =>
-      {
-        formData.append('files[]', file.data,file.name);
-      })
+      files.forEach((file) =>{formData.append('files[]', file.data,file.name);})
 
       formData.append('title', values.content);
       formData.append('description', values.description);
       formData.append('content', values.content);
       formData.append('userId', userState.id);
          
-      await createPost(formData);
+      const {data} = await createPost(formData);
+      if(data)
+      {
+        trigger({id:data.id});
+      }
   };
 
 
@@ -202,7 +233,8 @@ const PostForm:FC<IPostForm>= ({isDropActive,...other}) =>
             }
             </Grid>         
             <Grid item xs={12}  md={2}>
-              <LoadingButton variant='contained' sx={{widht:"100%",height:"100%"}} fullWidth disableElevation   type='submit' loading={isLoading}  >
+              <LoadingButton variant='contained' sx={{widht:"100%",height:"100%"}} fullWidth disableElevation   type='submit' 
+              loading={result.isLoading}  >
                 <Send sx={{color:"white"}}/>
               </LoadingButton>
             </Grid>

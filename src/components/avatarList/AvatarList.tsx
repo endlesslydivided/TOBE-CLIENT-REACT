@@ -158,10 +158,16 @@ export const  UsersListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
 export const  FriendsListItem:FC<IAvatarListItemProps> = ({member,userState}) => 
 {
   const navigate = useNavigate();
+  const [createDialog,createDialogStatus] = useCreateDialogMutation();
+  useEffect(() => checkStatus(createDialogStatus),[createDialogStatus.isLoading]);
 
-  const writeMessageHandler= () =>
+  const writeMessageHandler=  async () =>
   {
-    navigate(`/chat/${member.user?.id}`);
+    const {data} = await createDialog({name:`${member.user?.firstName} ${member.user?.lastName}`,isChat:false,creatorId:userState.id,usersId:[member.user?.id]});
+    if(data)
+    {
+      navigate(`/user/chat/${data.dialog.id}`);
+    }
   }
 
   return (

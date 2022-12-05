@@ -63,10 +63,10 @@ export const usersApiSlice = apiSlice.injectEndpoints({
                 method:`GET`,
                 params: filters
             }),
-            providesTags: (result, error, arg) =>
-            result
-              ? [...result.rows.map(({ id }:any ) => ({ type: 'Post' as const, id })),'Post']
-              : ['Post'],
+            // providesTags: (result, error, arg) =>
+            // result
+            //   ? [...result.rows.map(({ id }:any ) => ({ type: 'Post' as const, id })),'Post']
+            //   : ['Post'],
         }),
         getPagedDialogsByUser: builder.query({
             query: ({id,filters}) => ({

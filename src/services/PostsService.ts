@@ -9,8 +9,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
                 method:'POST',
                 body: post,
                 credentials: 'include',
-            }),
-            invalidatesTags: ['Feed','Post']          
+            })          
         }),
 
         updatePost: builder.mutation({
@@ -20,17 +19,17 @@ export const postsApiSlice = apiSlice.injectEndpoints({
                 body: photo,
                 credentials: 'include',
             }),
-            invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id },'Post','Feed']          
+            invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id }]          
         }),
 
         deletePost: builder.mutation({
-            query: ({ id }) =>
+            query: (id) =>
             ({
                 url: `/posts/${id}`,
                 method: 'DELETE',
                 credentials: 'include',
             }),  
-            invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id },'Post','Feed']          
+            invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id }]          
       
         }),
 
@@ -39,9 +38,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
                 url: `/posts/${id}`,
                 method: 'GET',
                 credentials: 'include',
-            }),
-            providesTags: (result, error, arg) =>
-            [{ type: 'Post' as const, id:arg.id }]
+            })
         }),
          
     })
@@ -52,4 +49,4 @@ export const {
 useCreatePostMutation,
 useUpdatePostMutation,
 useDeletePostMutation,
-useGetOnePostQuery} = postsApiSlice;
+useLazyGetOnePostQuery} = postsApiSlice;

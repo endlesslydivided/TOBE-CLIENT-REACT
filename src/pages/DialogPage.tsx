@@ -102,29 +102,8 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
         const setNewMessageArr = [...newMessagesAfter,...messages.rows,...newMessagesBefore];
 
         setMessages({rows:setNewMessageArr,count:1});
-        setFilters({...filters,lastDate:setNewMessageArr[0]?.createdAt});
+        setFilters(previous => ({...previous,lastDate:setNewMessageArr[0]?.createdAt}));
         setCountLeft(data.count);
-
-        // const messagesData = data[data.length - 1];
-        // const allMessages = data.map((x) => x.rows? x.rows : {...x.message,user:x.user}).flat();
-        // const lastCount = data.filter((x) => x.count)[0]?.count;
-        // if(data[data.length - 1].rows)
-        // {
-        //   const reversed = [...messagesData.rows].reverse();
-        //   if(messagesData.count !== 0)
-        //   {
-        //     setMessages({rows:[...reversed,...messages.rows],count:messagesData.count});
-        //     setFilters({...filters,lastDate:reversed[0].createdAt});
-        //   }
-        //   setCountLeft(messagesData.count);
-        //   bottom.current.scrollIntoView({ behavior: "smooth" });
-        // }
-        // else
-        // {
-        //   const message = {...messagesData.message,user : messagesData.user}
-        //   setMessages({rows:[...messages.rows,message],count:messages.count + 1});
-        //   bottom.current.scrollIntoView({ behavior: "smooth" });
-        // } 
       } 
      
     },[data])
@@ -212,15 +191,16 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
               <Divider variant="horizontal"/>
 
               <DialogForm  dialogId={id}/>
+              <ScrollBottom >
+                  <Fab size="large" color="info" aria-label="scroll back to bottom">
+                      <KeyboardArrowDown />
+                  </Fab>
+              </ScrollBottom>
             </Toolbar>
               
           </StyledRoot>                      
         </Grid>        
-        <ScrollBottom >
-            <Fab size="large" color="info" aria-label="scroll back to bottom">
-                <KeyboardArrowDown />
-            </Fab>
-        </ScrollBottom>
+       
       </Grid>
   );
 }

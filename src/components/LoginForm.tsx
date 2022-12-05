@@ -59,7 +59,7 @@ export function LoginForm() {
     const methods = useForm<LoginInput>({resolver: zodResolver(loginSchema),});
     const {reset,handleSubmit,formState: { isSubmitSuccessful }} = methods;
 
-    const [loginUser, { isLoading }] = useLoginMutation();
+    const [loginUser, { isLoading,isError }] = useLoginMutation();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -67,7 +67,7 @@ export function LoginForm() {
 
     const from = ((location.state as any)?.from.pathname as string) || '/profile';
 
-    useEffect(() =>{{isSubmitSuccessful &&  reset()}}, [isSubmitSuccessful]);
+    useEffect(() =>{{isSubmitSuccessful && !isError &&  reset()}}, [isSubmitSuccessful]);
 
     const onSubmitHandler: SubmitHandler<LoginInput> = async (values) => 
     {     

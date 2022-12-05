@@ -49,7 +49,7 @@ const DialogList:FC<IDialogListProps>= ({filters,setFilters,...other}) =>
         {
           if(dialogs[0].isIntersecting && filters.page < totalPages)
           {
-            setFilters({...filters, page: filters.page + 1} );
+            setFilters(previous => ({...previous, page: previous.page + 1}));
           }
         })
 

@@ -21,23 +21,23 @@ const SummarySection = () => {
   }
 
   return (
-    <Grid container spacing={3}>
-    <Grid item xs={12} sm={6} md={3}>
-      <WidgetSummary title="Постов" total={posts} icon={<Article/>}  />
-    </Grid>
+    <Grid container sx={{height:'50%'}} spacing={3}>
+      <Grid  item xs={12} sm={6} md={3}>
+        <WidgetSummary sx={{height:'100%'}} title="Постов" total={posts} icon={<Article/>}  />
+      </Grid>
 
-    <Grid item xs={12} sm={6} md={3}>
-      <WidgetSummary title="Пользователей" total={users} color="info" icon={<People/>} />
-    </Grid>
+      <Grid item xs={12} sm={6} md={3}>
+        <WidgetSummary sx={{height:'100%'}} title="Пользователей" total={users} color="info" icon={<People/>} />
+      </Grid>
 
-    <Grid item xs={12} sm={6} md={3}>
-      <WidgetSummary title="Сообщений" total={messages} color="warning" icon={<Message/>} />
-    </Grid>
+      <Grid item xs={12} sm={6} md={3}>
+        <WidgetSummary sx={{height:'100%'}} title="Сообщений" total={messages} color="warning" icon={<Message/>} />
+      </Grid>
 
-    <Grid item xs={12} sm={6} md={3}>
-      <WidgetSummary title="Фотографий" total={photos} color="error" icon={<Photo/>} />
+      <Grid item xs={12} sm={6} md={3}>
+        <WidgetSummary sx={{height:'100%'}} title="Фотографий" total={photos} color="error" icon={<Photo/>} />
+      </Grid>
     </Grid>
-  </Grid>
   )
 }
 

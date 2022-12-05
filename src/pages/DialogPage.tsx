@@ -36,7 +36,7 @@ interface IDialogSectionProps
 const initialFilters=
 {
     search: '',
-    lastDate: Date.MA,
+    lastDate: Date.Now,
     limit: 10,
     fixedLimit: 10,
     orderBy:'createdAt',

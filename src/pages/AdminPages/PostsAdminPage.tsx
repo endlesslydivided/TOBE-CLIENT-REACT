@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { ArrowLeft, Close, Feed, People, PeopleOutline, Send } from '@mui/icons-material';
-import { Box, Button, CardContent, Container, Divider, Fab, Grid, IconButton, TextField } from '@mui/material';
+import { Box, Button, CardContent, Container, Divider, Fab, Grid, IconButton, Paper, TextField } from '@mui/material';
 import WidgetSummary from '../../components/summaryWidget/SummaryWidget';
 import SummarySection from '../../sections/AdminSections/summary/SummarySection';
 import { Card, Typography } from '@mui/material';
@@ -16,6 +16,7 @@ import FullScreenLoader from '../../components/FullScreenLoader';
 import { useSendEmailMutation } from '../../services/AdminApiSlice';
 import { useDeletePostsMutation, useGetAllPostsQuery, useLazyGetOnePostQuery } from '../../services/PostsService';
 import AdminPostsTable from '../../components/adminPostsTable/AdminPostsTable';
+import PostItem from '../../components/postItem/PostItem';
 
 const initialFilters=
 {
@@ -23,7 +24,7 @@ const initialFilters=
     page: 0,
     limit: 10,
     orderBy:'createdAt',
-    orderDirection: 'ASC',
+    orderDirection: 'DESC',
 }
 
 const checkQuery = (error:any) => 
@@ -63,12 +64,10 @@ const UsersAdminPage = () =>
   useEffect(() => checkQuery(deletePostsResult.error),[deletePostsResult.isLoading]);
   useEffect(() => checkQuery(sendEmailResult.error),[sendEmailResult.isLoading]);
 
-
-  
   useEffect(() => {resultGetOnePost.isSuccess && setSelectedPost(resultGetOnePost)}, [resultGetOnePost.isFetching]);
   useEffect(() => {selectedPostId && trigger(selectedPostId)},[selectedPostId]);
 
-  useEffect(() => {},[changePostsList]);
+  useEffect(() => {},[changePostsList,resultGetOnePost]);
 
 
   const handleDeletePosts= async () =>
@@ -88,14 +87,16 @@ const UsersAdminPage = () =>
       toast.error('Выберите посты удаления', {position: 'top-right',});
       return;
     }
-    const resultDelete = await deletePostsResult(changePostsList.rows.map(x => x.id))
+    var search = new URLSearchParams(changePostsList.rows.map(s=>['ids',s.id]))
+
+    const resultDelete = await deletePosts(search)
     if(resultDelete?.data)
     {
-      const emails = Array.from(new Set(changePostsList.rows.map(x => x.user.email)).entries);
+      const emails = Array.from(new Set(changePostsList.rows.map(x => x.user.email)));
       const resultSendEmail = await sendEmail({...mailContent, emails});
-      if(resultSendEmail)
+      if(resultSendEmail?.data)
       {
-        toast.success(`Удалено ${resultDelete?.data} постов.Сообщение об удалении отправлено ${data} из ${emails.length} пользователям `, {position: 'top-right',});
+        toast.success(`Удалено ${resultDelete?.data} постов.Сообщение об удалении отправлено ${resultSendEmail.data} из ${emails.length} пользователям `, {position: 'top-right',});
         setMailContent(previous => ({message:'',title:''}))
         setChangePostsList({rows:[]});
         setFilters((previous) => ({...initialFilters}))
@@ -124,13 +125,27 @@ const UsersAdminPage = () =>
           <Grid item xs={12} md={6} lg={6} >
             <AdminPostsTable 
             setFilters={setFilters} 
+            setSelectedPostId={setSelectedPostId}
             filters={filters} 
             posts={resultGetAllPosts?.data} 
             changePostsList={changePostsList} 
             setChangePostsList={setChangePostsList} />
           </Grid>
           <Grid item xs={12} md={6} lg={6}>
-
+            {
+              resultGetOnePost?.data ?
+              resultGetOnePost.isFetching ?
+              <Box sx={{display:'flex',boxShadow:'0px 0px 20px rgb(0,0,0,0.1)',justifyContent:'center',alignItems:'center',p: 0,height:'100%',width:'100%',bgcolor: 'grey.200',borderRadius:"15px"}}>
+                <FullScreenLoader/>
+              </Box>
+              :
+              <PostItem post={resultGetOnePost?.data}/>
+              :
+              <Box sx={{display:'flex',boxShadow:'0px 0px 20px rgb(0,0,0,0.1)',justifyContent:'center',alignItems:'center',p: 0,height:'100%',width:'100%',bgcolor: 'grey.200',borderRadius:"15px"}}>
+                Выберите пост
+              </Box>
+            }
+            
           </Grid>
           <Grid item xs={12} md={12} lg={12} >
           <Card sx={{p:3}}>

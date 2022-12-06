@@ -38,7 +38,7 @@ interface IHeaderProps
 
 const Header: FC<IHeaderProps>  = ({ onOpenNav}) =>{
   return (
-    <StyledRoot>
+    <StyledRoot >
       <StyledToolbar>
         <IconButton  onClick={onOpenNav} sx={{mr: 1,color: 'text.primary',display: { lg: 'none' }}}>
           <Menu/>

@@ -6,6 +6,7 @@ import {Card,  Table,  Stack,  Paper,  Avatar, TableHead,TableSortLabel,Box,  Bu
 import { Add, Cancel, VisibilityOutlined, Watch } from '@mui/icons-material';
 import Scrollbar from '../scrollbar';
 import { useState } from 'react';
+import EnhancedTableToolbar from '../tableParts/EnhancedTableToolbar';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false,sx:{maxWidth: 10} },
@@ -36,7 +37,8 @@ const  AdminPostsTable: FC<AdminPostsTableProps> =({filters,posts,changePostsLis
   const [page,setPage] = useState(0);
 
   return (
-        <Card >
+        <Card>
+            <EnhancedTableToolbar numSelected={changePostsList?.rows?.length} label="Посты" />
             <TableContainer sx={{maxHeight:500,minHeight:500}}>
               <Table stickyHeader >
                 <TableHead>
@@ -47,7 +49,6 @@ const  AdminPostsTable: FC<AdminPostsTableProps> =({filters,posts,changePostsLis
                         style={{fontSize:'10px' }}
                         key={headCell.id}
                         align={headCell.alignRight ? 'right' : 'left'}
-                    //    sortDirection={orderBy === headCell.id ? order : false}
                       >
                         <TableSortLabel hideSortIcon>
                           {headCell.label}
@@ -95,12 +96,12 @@ const  AdminPostsTable: FC<AdminPostsTableProps> =({filters,posts,changePostsLis
                        <TableCell padding="checkbox">
                           <IconButton onClick={() => setSelectedPostId(id)}>
                              <VisibilityOutlined/>
-                          </IconButton>:
+                          </IconButton>
                          {selectedPost ?
                            <IconButton onClick={() => setChangePostsList(previous => ({rows:previous.rows.filter(x => x.id !== id)}))}>
                              <Cancel/>
                            </IconButton>:
-                           <IconButton onClick={() => setChangePostsList(previous => ({rows:[...previous.rows,user]}))}>
+                           <IconButton onClick={() => setChangePostsList(previous => ({rows:[...previous.rows,post]}))}>
                              <Add/>
                            </IconButton>
                          }
@@ -138,24 +139,29 @@ const  AdminPostsTable: FC<AdminPostsTableProps> =({filters,posts,changePostsLis
                 )}
               </Table>
             </TableContainer>
+
           {filters ?   
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
+            labelRowsPerPage='Записей на страницу:'
             component="div"
+            labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count !== -1 ? count : `более чем ${to}`}`}
             count={posts?.count}
             rowsPerPage={filters.limit}
             page={filters.page}
-            onPageChange={(e) => {setFilters(previous => ({...previous,page:e.target.value}))}}
-            onRowsPerPageChange={(e) => {setFilters(previous => ({...previous,limit:e.target.value,page:0}))}}
+            onPageChange={(e,page) => setFilters(previous => ({...previous,page}))}
+            onRowsPerPageChange={(e) => setFilters(previous => ({...previous,limit:parseInt(e.target.value, 10),page:0}))}
           />:
           <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
+          labelRowsPerPage='Записей на страницу:'
+          labelDisplayedRows={({ from, to, count }) => `${from}–${to} из ${count !== -1 ? count : `более чем ${to}`}`}
           component="div"
           count={posts?.rows?.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onPageChange={(e) => {setPage(e.target.value)}}
-          onRowsPerPageChange={(e) => {setRowsPerPage(e.target.value);setPage(0)}}
+          onPageChange={(e,page) => {setPage(e.target.value)}}
+          onRowsPerPageChange={(e) => {setRowsPerPage(parseInt(e.target.value, 10));setPage(0)}}
 
         />
           }

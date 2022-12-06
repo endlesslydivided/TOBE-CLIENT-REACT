@@ -46,7 +46,7 @@ export const chatApiSlice = apiSlice.injectEndpoints({
             },
         }),
         getMessages: builder.query<any, void>({
-            queryFn: () => ({ data: {count: 0, rows: [], havingResults: false} }),
+            queryFn: () => ({ data: {count: 0, dialogs: [], havingResults: false} }),
             async onCacheEntryAdded(body,{ cacheDataLoaded, cacheEntryRemoved, updateCachedData }) 
             {
               try 
@@ -60,7 +60,7 @@ export const chatApiSlice = apiSlice.injectEndpoints({
                   let rows,count,messageItem;
                   if(data.rows)
                   {
-                    rows = data.rows;                    
+                    rows= data.rows;                    
                     count = data.count;
                   }
                   else
@@ -71,8 +71,13 @@ export const chatApiSlice = apiSlice.injectEndpoints({
                   }
 
                   updateCachedData((draft) => {
-                    draft.count = data.count ?? draft.count;
-                    draft.rows.push(...rows);
+                    const dialogId = rows[0].dialogId;
+                    if(!draft.dialogs[dialogId])
+                    {
+                      draft.dialogs.push({dialogId,rows:[],count:0});
+                    } 
+                    draft.dialogs.filter(x=> x.dialogId === dialogId)[0].rows.push(...rows);
+                    draft.dialogs.filter(x=> x.dialogId === dialogId)[0].count = count ?? draft.dialogs.filter(x=> x.dialogId === dialogId)[0].count;
                     draft.havingResults = true;
                   });            
                       

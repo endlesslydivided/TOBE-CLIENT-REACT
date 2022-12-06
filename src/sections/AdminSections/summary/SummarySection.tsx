@@ -17,7 +17,7 @@ const SummarySection = () => {
     isLoadingUsers ||
     isLoadingPhotos )
   {
-    return <FullScreenLoader/>
+    return <FullScreenLoader sx={{height:'50%'}}/>
   }
 
   return (

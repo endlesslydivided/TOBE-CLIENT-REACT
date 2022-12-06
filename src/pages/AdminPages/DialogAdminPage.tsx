@@ -1,32 +1,21 @@
 //@ts-nocheck
-import { styled } from  '@mui/material/styles';
-import { AppBar, Card, CardActions, CardContent, CardHeader, Divider,Fab, FormControlLabel, FormGroup, IconButton, List, ListItemText, Switch, Tab, Tabs, Toolbar } from '@mui/material';
-import { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { Add, ArrowLeft, DateRange, KeyboardArrowDown, Language, LocationCity, Wc } from '@mui/icons-material';
-import { Box, Button, Container, Grid, Typography } from '@mui/material';
-import Image from 'mui-image';
-import { DateTimePicker } from '@mui/lab';
-import AvatarList from '../components/avatarList';
+import { Divider,Fab, IconButton,Toolbar } from '@mui/material';
+import { FC,  useCallback, useEffect, useRef, useState } from 'react';
+import {  ArrowLeft,  KeyboardArrowDown,    } from '@mui/icons-material';
+import { Box,  Grid, Typography } from '@mui/material';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { useGetPagedAvoidedRequestsByUserQuery, useGetPagedDialogsByUserQuery, useGetPagedFriendsByUserQuery, useGetPagedFriendsRequestsByUserQuery, useGetPagedUsersQuery } from '../services/UsersApiSlice';
-import FullScreenLoader from '../components/FullScreenLoader';
-import { useAppSelector } from '../hooks/redux';
-import { Search, SearchIconWrapper, StyledInputBase } from '../components/search/Search';
-import SearchIcon from '@mui/icons-material/Search';
-import { ObjectPair } from 'zod';
-import LineLoader from '../components/LineLoader';
-import { useGetDialogsQuery, useGetMessagesQuery, useLazyGetMessagesQuery } from '../services/ChatApiSlice';
-import MessagesList from '../components/messagesList';
-import { MessageListItem } from '../components/messagesList/MessagesList';
+import { useAppSelector } from '../../hooks/redux';
+import LineLoader from '../../components/LineLoader';
+import {useLazyGetMessagesQuery } from '../../services/ChatApiSlice';
+import MessagesList from '../../components/messagesList';
+import { MessageListItem } from '../../components/messagesList/MessagesList';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import DialogForm from '../sections/chat/DialogForm';
-import { StyledRoot } from '../layouts/dashboard/header';
-import { useGetOneDialogQuery } from '../services/DialogsApiSlice';
+import DialogForm from '../../sections/chat/DialogForm';
+import { useGetOneDialogQuery } from '../../services/DialogsApiSlice';
 import { Avatar } from '@material-ui/core';
 import { Stack } from '@mui/system';
-import ScrollTo from '../components/ScrollTo';
-import ScrollBottom from '../components/ui/ScrollBottom';
+import ScrollBottom from '../../components/ui/ScrollBottom';
+import { StyledRoot } from '../../layouts/adminDashboard/header';
 
 interface IDialogSectionProps
 {
@@ -43,7 +32,7 @@ const initialFilters=
     orderDirection: 'DESC',
 }
 
-const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
+const DialogAdminPage:FC<IDialogSectionProps>= ({...other}) => {
   
     const userState :any = useAppSelector(state => state.auth.user);
 
@@ -66,10 +55,10 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
     const { data:dialog, error:errorDialog,isSuccess:isSuccessDialog, isLoading:isLoadingDialog}  
     = useGetOneDialogQuery({id: id && parseInt(id)});
 
-      useEffect(()=>
-      {
-        trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true);
-      },[])
+    useEffect(()=>
+    {
+    trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true);
+    },[])
 
 
     const navigate = useNavigate();
@@ -95,16 +84,15 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
     {
       if(data?.havingResults)
       {
-        const currentDialog= data?.dialogs?.filter(x=> x.dialogId.toString() === id)[0];
-        const beforeMessages =[...currentDialog.rows].filter(x => x?.sent);
-        const afterMessages =[...currentDialog.rows].filter(x => !x?.sent).reverse();
+        const beforeMessages =[...data.rows].filter(x => x?.sent);
+        const afterMessages =[...data.rows].filter(x => !x?.sent).reverse();
         const newMessagesBefore = beforeMessages.filter(message => !messages.rows.some(x => message.id === x.id));
         const newMessagesAfter = afterMessages.filter(message => !messages.rows.some(x => message.id === x.id));
         const setNewMessageArr = [...newMessagesAfter,...messages.rows,...newMessagesBefore];
 
         setMessages({rows:setNewMessageArr,count:1});
         setFilters(previous => ({...previous,lastDate:setNewMessageArr[0]?.createdAt}));
-        setCountLeft(currentDialog.count);
+        setCountLeft(data.count);
       } 
      
     },[data])
@@ -144,15 +132,14 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
 
     return(
       <Grid container sx={{height:'100%'}}>
-        <Grid xs={12} md={12} item sx={{height:'0%'}}>
+        <Grid xs={12} md={12} item sx={{height:'10%'}}>
           <StyledRoot sx={{bgcolor:"grey.300" }}>
             <Toolbar>
-              <IconButton onClick={() => navigate('/user/chat')} >
+              <IconButton onClick={() => navigate('/admin')} >
                 <ArrowLeft/>           
               </IconButton>
               <Box sx={{ flexGrow: 1 }} />
 
-              <Link to={`/user/users/${dialogUser && dialogUser.id}`} style={{textDecoration:'none'}}>
                 <Stack direction="row" alignItems="center" spacing={{xs: 0.5,sm: 1}}>
                   {
                     dialogUser && <Avatar  sx={{ width: "40px" , height: "40px"}} 
@@ -167,14 +154,13 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
                     </Stack>
                   </Stack>
                 </Stack>
-              </Link>
 
               <Box sx={{ flexGrow: 1.2 }} />
             </Toolbar>
           </StyledRoot>
         </Grid>
 
-        <Grid xs={12} md={12} style={{display:'flex', flexDirection:'column',height:'100%',width:"100%",alignItems:'center',justifyContent:'flex-end'}} item>
+        <Grid xs={12} md={12} style={{display:'flex', flexDirection:'column',height:'80%',width:"100%",alignItems:'center',justifyContent:'flex-end'}} item>
               {
                   messages?.rows && messages?.count !== 0  ? 
                   <MessagesList lastMessageRef={lastMessageRef} listItem={MessageListItem} messagesList={messages?.rows}/>
@@ -206,4 +192,4 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
   );
 }
 
-export default DialogPage;
+export default DialogAdminPage;

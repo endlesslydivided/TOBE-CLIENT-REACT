@@ -7,10 +7,8 @@ export function fDate(date:any, newFormat:any) {
   return date ? format(new Date(date), fm) : '';
 }
 
-export function fDateTime(date:any, newFormat:any) {
-  const fm = newFormat || 'dd MMM yyyy p';
-
-  return date ? format(new Date(date), fm) : '';
+export function fDateTime(date:any, newFormat:any = 'dd MMM yyyy p') {
+  return date ? format(new Date(date), newFormat) : '';
 }
 
 export function fTimestamp(date:any) {

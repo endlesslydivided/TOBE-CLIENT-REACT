@@ -36,17 +36,16 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         deletePosts: builder.mutation({
             query: (ids) =>
             ({
-                url: `/posts`,
+                url: `/posts?${ids.toString()}`,
                 method: 'DELETE',
                 credentials: 'include',
-                params:ids
             }),  
             invalidatesTags: (result, error, arg) => [{ type: 'Post', id: arg.id }]          
       
         }),
 
         getOnePost: builder.query({
-            query: ({id}) => ({
+            query: (id) => ({
                 url: `/posts/${id}`,
                 method: 'GET',
                 credentials: 'include',

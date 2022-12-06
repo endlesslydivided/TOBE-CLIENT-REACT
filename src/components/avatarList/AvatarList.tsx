@@ -317,6 +317,47 @@ export const  DialogListItem:FC<IAvatarListItemProps> = ({member,userState}) =>
   );
 }
 
+export const  AdminDialogListItem:FC<IAvatarListItemProps> = ({member,userState}) => 
+{
+
+  return (
+    <Link  style={{textDecoration: 'none'}}  to={`/admin/chat/${member.id}`}>
+
+    <ListItem  key={member.id}>
+        <Grid container alignItems="center"   justifyContent="center" spacing={1}>
+          <Grid item xs> 
+     
+            <Stack direction="row" sx={{mx:2}} spacing={2} > 
+              <ListItemAvatar>
+                {
+                  member.isChat ?
+                  <Avatar  sx={{ width: "50px" , height: "50px" }} alt={`${member.name}`} 
+                  src={member?.users[0]?.photo?.path && process.env.REACT_APP_API_URL + member?.users[0]?.photo?.path}  /> :
+                  <Avatar  sx={{ width: "50px" , height: "50px" }} alt={`${member.users[0]?.firstName} ${member.users[0]?.lastName}`} 
+                  src={member?.users[0]?.photo?.path && process.env.REACT_APP_API_URL + member?.users[0]?.photo?.path}  />
+                }
+               
+              </ListItemAvatar>
+              
+              <ListItemText
+              sx={{py:0.2}}  
+                secondaryTypographyProps={{mt:0.5}}
+                primary={member.isChat ? `${member.name}` : `${member.users[0]?.firstName} ${member.users[0]?.lastName}`}
+                secondary={
+                    <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.secondary">
+                      {member.messages.length !== 0 ? member.messages[0].text : 'Нет сообщений'}
+                    </Typography>         
+                }
+              />         
+            </Stack> 
+          </Grid>
+        </Grid>
+    </ListItem>
+    </Link>
+
+  );
+}
+
 
 
 export default AvatarList;

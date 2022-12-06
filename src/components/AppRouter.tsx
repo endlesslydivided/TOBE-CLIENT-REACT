@@ -11,7 +11,7 @@ import Layout from '../layouts/dashboard/DashboardLayout';
 import AdminLayout from '../layouts/adminDashboard/AdminDashboardLayout';
 
 import ProfilePage from '../pages/ProfilePage';
-import { ALBUM_ROUTE, CHAT_ROUTE, FEED_ROUTE, USERS_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, ADMIN_POSTS_ROUTE, ADMIN_USERS_ROUTE } from '../utils/consts';
+import { ALBUM_ROUTE, CHAT_ROUTE, FEED_ROUTE, USERS_ROUTE, LOGIN_ROUTE, PROFILE_ROUTE, REGISTRATION_ROUTE, ADMIN_POSTS_ROUTE, ADMIN_USERS_ROUTE, ADMIN_ROUTE, ADMIN_DIALOG_ROUTE } from '../utils/consts';
 import UnauthorizePage from '../pages/UnauthorizePage';
 import UsersList from '../sections/usersList/UsersList';
 import UsersPage from '../pages/UsersPage';
@@ -23,6 +23,7 @@ import DialogPage from '../pages/DialogPage';
 import MainAdminPage from '../pages/AdminPages/MainAdminPage';
 import UsersAdminPage from '../pages/AdminPages/UsersAdminPage';
 import PostsAdminPage from '../pages/AdminPages/PostsAdminPage';
+import DialogAdminPage from '../pages/AdminPages/DialogAdminPage';
 
 
 const AppRouter = () => {
@@ -63,12 +64,13 @@ const AppRouter = () => {
         user.roles.some((role:any) => role.name === "ADMIN") &&
         ( 
         <>
-          <Route path="admin" element={<AdminLayout/>} >
+          <Route path="/admin" element={<AdminLayout/>} >
             <Route index element={<MainAdminPage/>}/>
-            <Route path={"/admin" + ADMIN_POSTS_ROUTE} element={<PostsAdminPage/>}/>
-            <Route path={"/admin" +  ADMIN_USERS_ROUTE} element={<UsersAdminPage/>}/>
+            <Route path={`${ADMIN_ROUTE}${ADMIN_POSTS_ROUTE}`} element={<PostsAdminPage/>}/>
+            <Route path={`${ADMIN_ROUTE}${ADMIN_USERS_ROUTE}`} element={<UsersAdminPage/>}/>
+            <Route path={`${ADMIN_ROUTE}${ADMIN_DIALOG_ROUTE}/:id`} element={<DialogAdminPage/>}/>
           </Route>
-          <Route path="*"  element={<Navigate to="/admin" replace/>}/>
+          <Route path="*"  element={<Navigate to={ADMIN_ROUTE } replace/>}/>
         </>)
       }
     </Routes>   

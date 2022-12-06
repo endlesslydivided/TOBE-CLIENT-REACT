@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import AdminUsersTableHeader from './AdminUsersTableHeader';
 import {fDate} from '../../utils/formatTime'
 import {Card,  Table,  Stack,  Paper,  Avatar, TableHead,TableSortLabel,Box,  Button,  Popover,  Checkbox,  TableRow,  MenuItem,  TableBody,  TableCell,  Container,  Typography,  IconButton,  TableContainer,  TablePagination,} from '@mui/material';
-import { Add, Cancel } from '@mui/icons-material';
+import { Add, Cancel, VisibilityOutlined, Watch } from '@mui/icons-material';
 import Scrollbar from '../scrollbar';
 import { useState } from 'react';
 
 const TABLE_HEAD = [
   { id: 'id', label: 'ID', alignRight: false,sx:{maxWidth: 10} },
-  { id: 'name', label: 'Имя', alignRight: false },
+  { id: 'user', label: 'Пользователь', alignRight: false },
   { id: 'email', label: 'Email', alignRight: false  },
   { id: 'country', label: 'Страна', alignRight: false,sx:{maxWidth: 10} },
   { id: 'createAt', label: 'Дата регистрации', alignRight: false,sx:{maxWidth: 50} },
@@ -17,18 +17,19 @@ const TABLE_HEAD = [
   { id: '' },
 ];
 
-interface AdminUsersTableProps
+interface AdminPostsTableProps
 {
   filters?:object;
-  users: Array<any>
-  changeUsersList: Array<any>;
-  setChangeUsersList: Function;
+  posts: Array<any>
+  setSelectedPost:Function;
+  changePostsList: Array<any>;
+  setChangePostsList: Function;
   setFilters: Function;
 }
 
 
 
-const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersList,setChangeUsersList,setFilters}) =>
+const  AdminPostsTable: FC<AdminPostsTableProps> =({filters,posts,changePostsList,setSelectedPostId,setChangePostsList,setFilters}) =>
 {
 
   const [rowsPerPage,setRowsPerPage] = useState(10);
@@ -59,13 +60,13 @@ const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersLis
                   </TableRow>
                 </TableHead>
                 <TableBody sx={{overflowX:false}}>
-                  {users?.rows?.map((user) => {
+                  {posts?.rows?.map((post) => {
 
-                    const { id, firstName, lastName, country, photo,email,createdAt,updatedAt } = user;
-                    const selectedUser = changeUsersList.rows.some(x => x.email === email);
+                    const { id, user,createdAt,updatedAt } = post;
+                    const selectedPost = changePostsList?.rows?.some(x => x.id === id);
 
                     return (
-                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedPost}>
                        
 
                        <TableCell sx={{ maxWidth: 10}} align="left">{id}</TableCell>
@@ -73,30 +74,33 @@ const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersLis
 
                        <TableCell sx={{ maxWidth: 50}}  component="th" scope="row" padding="none">
                          <Stack direction="row" alignItems="center" spacing={2}>
-                           <Avatar src={photo?.path && `${process.env.REACT_APP_API_URL}${photo?.path}`} />
+                           <Avatar src={user?.photo?.path && `${process.env.REACT_APP_API_URL}${user?.photo?.path}`} />
                            <Typography sx={{ fontSize: "11px"}} variant="subtitle2" noWrap>
-                             {`${lastName} ${firstName}`}
+                             {`${user?.lastName} ${user?.firstName}`}
                            </Typography>
                          </Stack>
                        </TableCell>
 
                        <TableCell sx={{ fontSize: "11px",maxWidth: 50}}  align="left"> 
                          <Typography sx={{ fontSize: "11px"}} variant="subtitle2" noWrap>
-                           {email}
+                           {user?.email}
                          </Typography>
                        </TableCell>
 
-                       <TableCell sx={{ fontSize: "11px",maxWidth: 20}} align="left">{country}</TableCell>
+                       <TableCell sx={{ fontSize: "11px",maxWidth: 20}} align="left">{user?.country}</TableCell>
 
                        <TableCell sx={{ fontSize: "11px",maxWidth: 50}} align="left">{fDate(createdAt)}</TableCell>
                        <TableCell sx={{ fontSize: "11px",maxWidth: 50}} align="left">{fDate(updatedAt)}</TableCell>
 
                        <TableCell padding="checkbox">
-                         {selectedUser ?
-                           <IconButton onClick={() => setChangeUsersList(previous => ({rows:previous.rows.filter(x => x.email !== email)}))}>
+                          <IconButton onClick={() => setSelectedPostId(id)}>
+                             <VisibilityOutlined/>
+                          </IconButton>:
+                         {selectedPost ?
+                           <IconButton onClick={() => setChangePostsList(previous => ({rows:previous.rows.filter(x => x.id !== id)}))}>
                              <Cancel/>
                            </IconButton>:
-                           <IconButton onClick={() => setChangeUsersList(previous => ({rows:[...previous.rows,user]}))}>
+                           <IconButton onClick={() => setChangePostsList(previous => ({rows:[...previous.rows,user]}))}>
                              <Add/>
                            </IconButton>
                          }
@@ -113,7 +117,7 @@ const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersLis
                   )} */}
                 </TableBody>
 
-                {users.rows.length === 0 && filters &&(
+                {posts?.rows?.length === 0 && filters &&(
                   <TableBody>
                     <TableRow>
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
@@ -138,7 +142,7 @@ const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersLis
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={users.count}
+            count={posts?.count}
             rowsPerPage={filters.limit}
             page={filters.page}
             onPageChange={(e) => {setFilters(previous => ({...previous,page:e.target.value}))}}
@@ -147,7 +151,7 @@ const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersLis
           <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={users.rows.length}
+          count={posts?.rows?.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={(e) => {setPage(e.target.value)}}
@@ -161,4 +165,4 @@ const  AdminUsersTable: FC<AdminUsersTableProps> =({filters,users,changeUsersLis
 }
 
 
-export default AdminUsersTable;
+export default AdminPostsTable;

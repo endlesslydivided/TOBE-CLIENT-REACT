@@ -6,10 +6,30 @@ import { Card, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ADMIN_POSTS_ROUTE, ADMIN_USERS_ROUTE } from '../../utils/consts';
+import { useGetPagedUsersQuery } from '../../services/UsersApiSlice';
+import { useEffect } from 'react';
+import FullScreenLoader from '../../components/FullScreenLoader';
+import { toast } from 'react-toastify';
+
+const checkQuery = (error:any) => 
+{
+    if (error) 
+    {
+      if (Array.isArray((error as any).data.error)) 
+      {
+        (error as any).data.error.forEach((el: any) =>toast.error(el.message, {position: 'top-right',}));
+      } 
+      else 
+      {
+        toast.error((error as any).data.message, {position: 'top-right',});
+      }
+    }
+};
 
 const MainAdminPage = () => {
 
   const navigate = useNavigate();
+  
 
   return (
     <Container maxWidth="xl" sx={{height:'100%'}}>

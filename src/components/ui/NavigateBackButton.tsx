@@ -2,11 +2,12 @@
 import { ArrowLeft } from '@mui/icons-material';
 import { Box, Fab } from '@mui/material';
 import React, { useRef } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 const NavigateBackButton = () => {
 
     const navigateBack = useRef();
-   
+    const navigate = useNavigate();
   return (
     <Box
     ref={navigateBack}

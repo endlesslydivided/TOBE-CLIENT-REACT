@@ -34,6 +34,15 @@ export const adminApiSlice = apiSlice.injectEndpoints({
                 method: 'GET',
                 credentials: 'include',
             }),
+        }),
+        sendEmail: builder.mutation({
+            query: (message) =>
+            ({
+                url: `/mail/send`,
+                method: 'POST',
+                credentials: 'include',
+                body:message
+            }),
         })
     })
 })
@@ -44,4 +53,5 @@ export const {
 useGetMessagesStatsQuery,
 useGetPostsStatsQuery,
 useGetUsersStatsQuery,
-useGetPhotosStatsQuery} = adminApiSlice;
+useGetPhotosStatsQuery,
+useSendEmailMutation} = adminApiSlice;

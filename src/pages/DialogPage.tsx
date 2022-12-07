@@ -68,8 +68,14 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
 
       useEffect(()=>
       {
-        trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true);
-      },[])
+        if(dialogUser)
+        trigger({
+          dialogId:id,
+          fromUserId:userState.id,
+          toUserId:dialogUser.id,
+          filters:filters,
+          auth:{dialogId:id, id: userState.id}},true);
+      },[dialogUser])
 
 
     const navigate = useNavigate();
@@ -96,10 +102,13 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
       if(data?.havingResults)
       {
         const currentDialog= data?.dialogs?.filter(x=> x.dialogId.toString() === id)[0];
+
         const beforeMessages =[...currentDialog.rows].filter(x => x?.sent);
         const afterMessages =[...currentDialog.rows].filter(x => !x?.sent).reverse();
+
         const newMessagesBefore = beforeMessages.filter(message => !messages.rows.some(x => message.id === x.id));
         const newMessagesAfter = afterMessages.filter(message => !messages.rows.some(x => message.id === x.id));
+        
         const setNewMessageArr = [...newMessagesAfter,...messages.rows,...newMessagesBefore];
 
         setMessages({rows:setNewMessageArr,count:1});
@@ -191,7 +200,7 @@ const DialogPage:FC<IDialogSectionProps>= ({...other}) => {
             <Toolbar>
               <Divider variant="horizontal"/>
 
-              <DialogForm  dialogId={id}/>
+              <DialogForm  dialogUser={dialogUser} dialogId={id}/>
               <ScrollBottom >
                   <Fab size="large" color="info" aria-label="scroll back to bottom">
                       <KeyboardArrowDown />

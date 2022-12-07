@@ -33,10 +33,11 @@ interface IDialogForm
     isDropActive: boolean;
     toUserId: number;
     dialogId: number;
+    dialogUser: any;
 }
 
 
-const DialogForm:FC<IDialogForm>= ({isDropActive,toUserId,dialogId,...other}) => 
+const DialogForm:FC<IDialogForm>= ({isDropActive,toUserId,dialogId,dialogUser,...other}) => 
 {
   const userState :any = useAppSelector(state => state.auth.user);
 
@@ -66,9 +67,11 @@ const DialogForm:FC<IDialogForm>= ({isDropActive,toUserId,dialogId,...other}) =>
       toast.error('Длина сообщения должна быть не более 1000 символов', {position: 'top-right',});
       return;
     }
+
     const message = await createMessage(
         {
-            toUserId,
+            fromUserId:userState.id,
+            toUserId:dialogUser.id,
             dto:
             {
                 text: messageText,
@@ -94,7 +97,7 @@ const DialogForm:FC<IDialogForm>= ({isDropActive,toUserId,dialogId,...other}) =>
               :
               <>
                 <Grid item xs={12} >
-                  <TextField size="small" type="text" fullWidth name="content" value={messageText} 
+                  <TextField disabled={!dialogUser} size="small" type="text" fullWidth name="content" value={messageText} 
                   onChange={(e) => setMessageText(e.target.value)} label={`Написать сообщение (${messageText.length}/1000)`}	multiline maxRows={10}/>         
                 </Grid>         
               </>

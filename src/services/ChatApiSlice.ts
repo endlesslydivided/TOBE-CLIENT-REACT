@@ -57,11 +57,11 @@ export const chatApiSlice = apiSlice.injectEndpoints({
 
                 socket.on(ChatClientEvent.ReceiveMessage, (data: any) => 
                 {
-                  let rows,count,messageItem;
-                  if(data.rows)
+                  let rows,count,messageItem,dialogId;
+                  if(data.messages)
                   {
-                    rows= data.rows;                    
-                    count = data.count;
+                    rows= data.messages.rows;                    
+                    count = data.messages.count;
                   }
                   else
                   {
@@ -69,16 +69,18 @@ export const chatApiSlice = apiSlice.injectEndpoints({
                     let message = {...messageItem?.message,user: messageItem?.user,sent: true};
                     rows = [message];
                   }
-
+                  dialogId = data.dialogId;
                   updateCachedData((draft) => {
-                    const dialogId = rows[0].dialogId;
-                    if(!draft.dialogs[dialogId])
+                    if(!draft.dialogs.filter(x=> x.dialogId.toString() === dialogId)[0])
                     {
                       draft.dialogs.push({dialogId,rows:[],count:0});
                     } 
-                    draft.dialogs.filter(x=> x.dialogId === dialogId)[0].rows.push(...rows);
-                    draft.dialogs.filter(x=> x.dialogId === dialogId)[0].count = count ?? draft.dialogs.filter(x=> x.dialogId === dialogId)[0].count;
+                    const dialog = draft.dialogs.filter(x=> x.dialogId.toString() === dialogId)[0];
+                    const rowsToSet = rows.filter(message => !dialog.rows.some(x => message.id === x.id))
+                    dialog.rows.push(...rowsToSet);
+                    dialog.count = count ?? dialog.count;
                     draft.havingResults = true;
+                   
                   });            
                       
                 });

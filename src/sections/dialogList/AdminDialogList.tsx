@@ -99,6 +99,11 @@ const AdminDialogList:FC<IDialogListProps>= ({filters,setFilters,...other}) =>
         <AvatarList listItem={AdminDialogListItem} membersList={dialogs?.rows}/>
         : isFethingDialogs ? <LineLoader/> : notFound        
       } 
+       {
+        dialogs?.rows && dialogs?.count !== 0  ? 
+        <AvatarList listItem={AdminDialogListItem} membersList={dialogs?.rows}/>
+        : isFethingDialogs ? <LineLoader/> : notFound        
+      } 
         <div ref={lastDialogRef} style={{height: 0}}/>
       {
         dialogs?.rows && dialogs?.count !== 0 && isFethingDialogs &&<LineLoader/> 

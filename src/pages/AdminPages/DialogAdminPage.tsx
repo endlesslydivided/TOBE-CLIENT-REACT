@@ -55,11 +55,6 @@ const DialogAdminPage:FC<IDialogSectionProps>= ({...other}) => {
     const { data:dialog, error:errorDialog,isSuccess:isSuccessDialog, isLoading:isLoadingDialog}  
     = useGetOneDialogQuery({id: id && parseInt(id)});
 
-    useEffect(()=>
-    {
-    trigger({dialogId:id,toUserId:userState.id,filters:filters,auth:{dialogId:id, id: userState.id}},true);
-    },[])
-
 
     const navigate = useNavigate();
 
@@ -80,22 +75,37 @@ const DialogAdminPage:FC<IDialogSectionProps>= ({...other}) => {
         if (message) lastElement.current.observe(message);
       },[isFethingMessages,countLeft])
 
-    useEffect(() => 
-    {
-      if(data?.havingResults)
+      useEffect(()=>
       {
-        const beforeMessages =[...data.rows].filter(x => x?.sent);
-        const afterMessages =[...data.rows].filter(x => !x?.sent).reverse();
-        const newMessagesBefore = beforeMessages.filter(message => !messages.rows.some(x => message.id === x.id));
-        const newMessagesAfter = afterMessages.filter(message => !messages.rows.some(x => message.id === x.id));
-        const setNewMessageArr = [...newMessagesAfter,...messages.rows,...newMessagesBefore];
+        if(dialogUser)
+        trigger({
+          dialogId:id,
+          fromUserId:userState.id,
+          toUserId:dialogUser.id,
+          filters:filters,
+          auth:{dialogId:id, id: userState.id}},true);
+      },[dialogUser])
 
-        setMessages({rows:setNewMessageArr,count:1});
-        setFilters(previous => ({...previous,lastDate:setNewMessageArr[0]?.createdAt}));
-        setCountLeft(data.count);
-      } 
-     
-    },[data])
+      useEffect(() => 
+      {
+        if(data?.havingResults)
+        {
+          const currentDialog= data?.dialogs?.filter(x=> x.dialogId.toString() === id)[0];
+
+          const beforeMessages =[...currentDialog.rows].filter(x => x?.sent);
+          const afterMessages =[...currentDialog.rows].filter(x => !x?.sent).reverse();
+
+          const newMessagesBefore = beforeMessages.filter(message => !messages.rows.some(x => message.id === x.id));
+          const newMessagesAfter = afterMessages.filter(message => !messages.rows.some(x => message.id === x.id));
+          
+          const setNewMessageArr = [...newMessagesAfter,...messages.rows,...newMessagesBefore];
+
+          setMessages({rows:setNewMessageArr,count:1});
+          setFilters(previous => ({...previous,lastDate:setNewMessageArr[0]?.createdAt}));
+          setCountLeft(currentDialog.count);
+        }  
+      },[data])
+
 
     const checkQuery = (error:any) => 
       {
@@ -132,7 +142,7 @@ const DialogAdminPage:FC<IDialogSectionProps>= ({...other}) => {
 
     return(
       <Grid container sx={{height:'100%'}}>
-        <Grid xs={12} md={12} item sx={{height:'10%'}}>
+        <Grid xs={12} md={12} item >
           <StyledRoot sx={{bgcolor:"grey.300" }}>
             <Toolbar>
               <IconButton onClick={() => navigate('/admin')} >
@@ -160,24 +170,25 @@ const DialogAdminPage:FC<IDialogSectionProps>= ({...other}) => {
           </StyledRoot>
         </Grid>
 
-        <Grid xs={12} md={12} style={{display:'flex', flexDirection:'column',height:'80%',width:"100%",alignItems:'center',justifyContent:'flex-end'}} item>
+        <Grid xs={12} md={12} 
+        style={{display:'flex', flexDirection:'column',width:"100%",height:'85%',alignItems:'center',justifyContent:'flex-end'}} 
+        item>
               {
                   messages?.rows && messages?.count !== 0  ? 
                   <MessagesList lastMessageRef={lastMessageRef} listItem={MessageListItem} messagesList={messages?.rows}/>
                   : isFethingMessages ? <LineLoader/> : notFound        
-
               } 
               {
                 messages?.rows && messages?.count !== 0 && isFethingMessages &&<LineLoader/> 
               }                                
         </Grid>
         
-        <Grid xs={12} md={12}  item sx={{height:'0%'}}>
+        <Grid xs={12} md={12}  item>
           <StyledRoot sx={{bgcolor:"grey.300", top: 'auto', bottom: 0 }}>
             <Toolbar>
               <Divider variant="horizontal"/>
 
-              <DialogForm  dialogId={id}/>
+              <DialogForm  dialogUser={dialogUser} dialogId={id}/>
               <ScrollBottom >
                   <Fab size="large" color="info" aria-label="scroll back to bottom">
                       <KeyboardArrowDown />
